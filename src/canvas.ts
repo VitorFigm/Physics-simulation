@@ -1,12 +1,10 @@
-import "./canvas.scss";
+const canvasElement = document.getElementById("canvas") as HTMLCanvasElement;
+export const graphics = canvasElement.getContext("2d");
 
-const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-export const context = canvas.getContext("2d");
-
-const changeResolution = () => {
-  canvas.height = innerHeight;
-  canvas.width = innerWidth;
+const adaptResolution = () => {
+  canvasElement.width = innerWidth;
+  canvasElement.height = innerHeight;
 };
 
-changeResolution();
-addEventListener("resize", changeResolution);
+adaptResolution();
+addEventListener("resize", adaptResolution);
