@@ -1,4 +1,4 @@
 import { ExternalContext } from "../../index";
 export { ExternalContext } from "../../index";
 
-type ImageLoad = ExternalContext["imageLoader"];
+export type ImageLoad = ExternalContext["imageLoader"];

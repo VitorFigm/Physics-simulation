@@ -30,7 +30,7 @@ const config = {
       {
         test: /\.(ts|tsx)$/i,
         loader: "ts-loader",
-        exclude: ["/node_modules/"],
+        exclude: ["/node_modules/", /\.(spec|e2e)\.ts$/],
       },
       {
         test: /\.s[ac]ss$/i,
