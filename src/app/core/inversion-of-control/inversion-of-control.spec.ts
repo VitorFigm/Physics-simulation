@@ -1,9 +1,7 @@
-import { InversionOfControl } from "./inversion-of-control.engine";
+import { Inject, Injectable } from "./inversion-of-control.engine";
 
 describe("Inversion of control", () => {
   class Token {}
-
-  const { Inject, Injectable } = InversionOfControl;
 
   it("Should provide dependency", () => {
     @Injectable({ token: Token })

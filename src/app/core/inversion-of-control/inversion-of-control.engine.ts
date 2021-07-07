@@ -1,4 +1,5 @@
-type Contructor = new () => unknown;
+import { Contructor } from "@app/types";
+
 type Container = Map<
   Contructor,
   { instace?: unknown; Class: Contructor; singleton: boolean }
@@ -9,7 +10,7 @@ type InjectionOptions = {
   singleton?: boolean;
 };
 
-export abstract class InversionOfControl {
+class InversionOfControl {
   static container: Container = new Map();
 
   /**
@@ -31,17 +32,19 @@ export abstract class InversionOfControl {
               Tip: Use Injectable decorator at this dependency's implementation
               `);
     }
-    return getInjectableInstance(token);
+    return InversionOfControl.getInjectableInstance(token);
   }
+
+  static getInjectableInstance = (token: Contructor) => {
+    const injection = InversionOfControl.container.get(token);
+    const isNewInstaceNeeded = !injection.singleton || !injection.instace;
+
+    if (isNewInstaceNeeded) {
+      injection.instace = new injection.Class();
+    }
+
+    return injection.instace;
+  };
 }
 
-const getInjectableInstance = (token: Contructor) => {
-  const injection = InversionOfControl.container.get(token);
-  const isNewInstaceNeeded = !injection.singleton || !injection.instace;
-
-  if (isNewInstaceNeeded) {
-    injection.instace = new injection.Class();
-  }
-
-  return injection.instace;
-};
+export const { Inject, Injectable } = InversionOfControl;
