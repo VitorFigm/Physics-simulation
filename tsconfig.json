@@ -6,12 +6,11 @@
     "module": "es6",
     "target": "ES2020",
     "allowJs": false,
-    "baseUrl": "./src",
+    "baseUrl": "src",
     "moduleResolution": "Node",
     "paths": {
-      "@app/types": ["app/types/"]
+      "@app/types": ["app/types/index.ts"]
     },
     "experimentalDecorators": true
   }
-  // "files": ["src/index.ts"]
 }

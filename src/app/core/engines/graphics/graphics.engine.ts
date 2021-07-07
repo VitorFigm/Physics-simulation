@@ -1,0 +1,40 @@
+import { Figure, GraphicalContext, GraphicalAPI } from "app/types";
+
+export abstract class Graphics {
+  static drawCanvas(graphicalContext: GraphicalContext, api: GraphicalAPI) {
+    Object.values(graphicalContext).forEach((value) =>
+      Graphics.drawObject(value, api)
+    );
+  }
+
+  static drawObject(figure: Figure, { graphics, imageLoader }: GraphicalAPI) {
+    Graphics.clearCanvas(graphics);
+
+    const position = Graphics.translatePosition(
+      graphics,
+      figure.position.x,
+      figure.position.y,
+      figure.height
+    );
+    const loadedSprite = imageLoader.get(figure.sprite);
+    graphics.drawImage(loadedSprite, position.x, position.y);
+  }
+
+  static clearCanvas(graphics: CanvasRenderingContext2D) {
+    graphics.clearRect(0, 0, graphics.canvas.height, graphics.canvas.width);
+  }
+
+  static translatePosition(
+    graphics: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    height: number
+  ) {
+    return {
+      x,
+      y: graphics.canvas.height - y - height,
+    };
+  }
+}
+
+export const { drawCanvas } = Graphics;
