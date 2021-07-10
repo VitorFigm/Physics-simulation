@@ -1,5 +1,5 @@
 const canvas = document.createElement("canvas");
-// document.body.appendChild(canvas);
+document.body.appendChild(canvas);
 
 export const graphics = canvas.getContext("2d");
 

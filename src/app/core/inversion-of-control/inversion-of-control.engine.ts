@@ -14,7 +14,7 @@ class InversionOfControl {
   static container: Container = new Map();
 
   /**
-   * Decorator to provide class with a injection token in InversionOfControl.inject
+   * Decorator to provide class with a injection token in InversionOfControl.Inject
    */
 
   static Injectable(options: InjectionOptions) {
@@ -25,6 +25,11 @@ class InversionOfControl {
       });
     };
   }
+
+  /**
+   * Provide a class instace of the token parameter
+   * Use this to make dependecy injection in functions or in classes
+   */
 
   static Inject(token: Contructor) {
     if (!InversionOfControl.container.has(token)) {
