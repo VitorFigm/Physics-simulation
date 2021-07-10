@@ -1,4 +1,4 @@
-import { Figure, GraphicalContext, GraphicalAPI } from "app/types";
+import { FrameBuilder, GraphicalContext, GraphicalAPI } from "@app/types";
 
 export abstract class Graphics {
   static drawCanvas(graphicalContext: GraphicalContext, api: GraphicalAPI) {
@@ -7,7 +7,10 @@ export abstract class Graphics {
     );
   }
 
-  static drawObject(figure: Figure, { graphics, imageLoader }: GraphicalAPI) {
+  static drawObject(
+    figure: FrameBuilder,
+    { graphics, imageLoader }: GraphicalAPI
+  ) {
     Graphics.clearCanvas(graphics);
 
     const position = Graphics.translatePosition(
@@ -17,11 +20,24 @@ export abstract class Graphics {
       figure.height
     );
     const loadedSprite = imageLoader.get(figure.sprite);
-    graphics.drawImage(loadedSprite, position.x, position.y);
+    loadedSprite.width = figure.width;
+    loadedSprite.height = figure.height;
+
+    graphics.drawImage(
+      loadedSprite,
+      0,
+      0,
+      figure.width,
+      figure.height,
+      position.x,
+      position.y,
+      figure.width,
+      figure.height
+    );
   }
 
   static clearCanvas(graphics: CanvasRenderingContext2D) {
-    graphics.clearRect(0, 0, graphics.canvas.height, graphics.canvas.width);
+    graphics.clearRect(0, 0, graphics.canvas.width, graphics.canvas.height);
   }
 
   static translatePosition(
