@@ -1,6 +1,6 @@
 import { ControledView, View } from "@app/types";
 import { ValidImageName } from "assets";
-import { StateHandler } from "./controllers/states";
+import { StateHandler } from "./controllers/states/state-handler";
 
 interface Figure extends ControledView, View {
   sprite: ValidImageName;
@@ -10,7 +10,7 @@ type InitialView = {
   [key: string]: Figure;
 };
 
-const standing = new StateHandler().get().stand();
+const standing = new StateHandler().getStates().stand();
 
 export const INITIAL_VIEW: InitialView = {
   player: {
@@ -19,7 +19,7 @@ export const INITIAL_VIEW: InitialView = {
     height: 100,
     position: {
       x: 20,
-      y: 100,
+      y: 0,
     },
     width: 30,
   },

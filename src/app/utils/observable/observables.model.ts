@@ -53,3 +53,14 @@ export class Observable<T> {
 
   constructor(private _callback: Callback<T>) {}
 }
+
+export class Subject<T> {
+  constructor() {
+    const observable = new Observable<T>(({ next }) => {
+      this.next = next;
+    });
+    this.toObservable = () => observable;
+  }
+  next: (value: T) => void;
+  toObservable: () => Observable<T>;
+}

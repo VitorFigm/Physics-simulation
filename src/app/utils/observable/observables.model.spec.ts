@@ -1,4 +1,4 @@
-import { Observable } from "./observables.model";
+import { Observable, Subject } from "./observables.model";
 
 describe("Observable", () => {
   const valueToEmmit = 1;
@@ -25,5 +25,20 @@ describe("Observable", () => {
         },
       });
     });
+  });
+});
+
+describe("Subject", () => {
+  const subject = new Subject<number>();
+  it("should emit values", (end) => {
+    const valueToEmit = 1;
+    subject.toObservable().subscribe({
+      next(value) {
+        expect(value).toEqual(value);
+        end();
+      },
+    });
+
+    subject.next(valueToEmit);
   });
 });

@@ -1,26 +1,38 @@
-import { State } from "..";
+import { State } from "../state-handler";
 
 type InternalState = {
-  velocity: number;
-  accelaration: number;
+  velocity?: number;
+  accelaration?: number;
 };
 
-export const walk = (
-  maxVelocity: number,
-  accelaration: number,
-  friction: number
-): State => {
+type Params = {
+  accelaration: number;
+  axis: "x" | `y`;
+  friction: number;
+  initialVelocity?: number;
+  maxVelocity?: number;
+};
+
+export const move = ({
+  accelaration,
+  axis,
+  friction,
+  initialVelocity,
+  maxVelocity,
+}: Params): State<InternalState> => {
   let internalState: InternalState = {
-    velocity: 0,
+    velocity: initialVelocity ?? 0,
     accelaration,
   };
 
   return {
     is(stateName) {
-      return stateName === "walk";
+      return stateName === "move";
     },
+
     construct(view) {
       const isVelocityMax =
+        maxVelocity &&
         Math.abs(internalState.velocity) >= Math.abs(maxVelocity);
 
       const isOposityAcceleration =
@@ -31,11 +43,14 @@ export const walk = (
       }
 
       internalState.velocity *= 1 - friction;
-      view.position.x += internalState.velocity;
+      view.position[axis] += internalState.velocity;
     },
-    transform(newInternalState: InternalState) {
+    transform(newInternalState) {
       Object.assign(internalState, newInternalState);
       return this;
+    },
+    getInternalState() {
+      return internalState;
     },
   };
 };
