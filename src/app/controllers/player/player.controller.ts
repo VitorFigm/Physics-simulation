@@ -1,16 +1,21 @@
 import { Controller } from "@app/types";
 import { Observable } from "@app/utils";
 import { KeyboardService } from "app/services/keyboard/keyboard.service";
-import { State, StateHandler } from "../states";
+import { State, StateHandler } from "../states/state-handler";
 
 export const controlPlayer: Controller = ({ Inject }, player) => {
   const keyboard = Inject(KeyboardService);
   const stateHandler = Inject(StateHandler);
-  const { walk } = stateHandler.get();
+  const { move, jump } = stateHandler.getStates();
 
   const accelaration = 0.1;
 
-  const walking = walk(1.5, accelaration, 0.05);
+  const walking = move({
+    accelaration,
+    axis: "x",
+    friction: 0.05,
+    maxVelocity: 1,
+  });
 
   const walkLeft = () => walking.transform({ accelaration });
   const walkRight = () => walking.transform({ accelaration: -accelaration });
@@ -18,6 +23,7 @@ export const controlPlayer: Controller = ({ Inject }, player) => {
   const keyDownMapper = {
     d: walkLeft,
     a: walkRight,
+    w: () => jump(20),
   };
 
   defineKeyboardControl(keyDownMapper, keyboard.listenKeyDown.bind(keyboard));
@@ -32,13 +38,13 @@ export const controlPlayer: Controller = ({ Inject }, player) => {
   defineKeyboardControl(keyUpMapper, keyboard.listenKeyUp.bind(keyboard));
 
   function defineKeyboardControl(
-    keyMapper: Record<string, () => State>,
+    keyMapper: Record<string, () => State<unknown>>,
     keyboardListener: (key: string) => Observable<string>
   ) {
-    Object.entries(keyMapper).forEach(([key, createNewState]) => {
+    Object.entries(keyMapper).forEach(([key, getNewState]) => {
       keyboardListener(key).subscribe({
         next() {
-          stateHandler.set(player, createNewState());
+          stateHandler.setState(player, getNewState());
         },
       });
     });

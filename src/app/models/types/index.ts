@@ -1,4 +1,4 @@
-import { State } from "app/controllers/states";
+import { State } from "app/controllers/states/state-handler";
 
 export type ImageLoader = ReadonlyMap<string, HTMLImageElement>;
 
@@ -21,7 +21,7 @@ export interface View {
   height: number;
 }
 
-export interface ControledView {
+export interface ControledView extends View {
   state: State;
 }
 
@@ -38,4 +38,4 @@ export interface Subscription<T> {
   error?: (error: Error) => void;
 }
 
-export type Controller = (context: Context, view: { state: State }) => void;
+export type Controller = (context: Context, view: ControledView) => void;

@@ -18,9 +18,9 @@ const game = () => {
 };
 
 function contructNextView() {
-  Object.values(view).forEach((viewComponent) =>
-    viewComponent.state.construct(viewComponent)
-  );
+  Object.values(view).forEach((viewComponent) => {
+    viewComponent.state.construct(viewComponent);
+  });
 }
 
 addEventListener("load", () => requestAnimationFrame(game));
