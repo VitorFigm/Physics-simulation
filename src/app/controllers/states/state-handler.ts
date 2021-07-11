@@ -2,7 +2,7 @@ import { ControledView, View } from "@app/types";
 import { Observable } from "@app/utils";
 import { Injectable } from "app/core/inversion-of-control/inversion-of-control.engine";
 import { move } from "./move/moving.state";
-import { jump } from "./jump/jump.state";
+import { jump } from "./jump/jumping.state";
 
 export const stand = (): State => {
   return {
