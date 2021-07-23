@@ -1,56 +1,58 @@
-import { Context, View } from "@app/types";
+import { Context, State, View } from "@app/models";
 import { Inject } from "app/core/inversion-of-control/inversion-of-control.engine";
-import { State, StateHandler } from "../state-handler";
+import { Moving } from "../move/moving.state";
+import { StateHandler } from "../state-handler";
 import { mergeStates } from "../utils";
 
-export const jump = (maxDistance: number) =>
-  jumpImplementation(maxDistance, Inject as Context["Inject"]);
+const GRAVITY = 0.1;
 
-/**
- * Isolated implementaion of junp for unit test
- */
-export const jumpImplementation = (
-  maxDistance: number,
-  Inject: Context["Inject"]
-): State => {
-  const GRAVITY = 0.1;
-  const move = Inject(StateHandler).getStates().move;
+export class Jumping extends State {
+  velocity: number;
+  movingY: Moving;
 
-  const initialVelocity = calculateInitialVelocity();
-
-  let movingUp = move({
-    initialVelocity,
-    axis: "y",
-    accelaration: -GRAVITY,
-    friction: 0.005,
-  });
-
-  return {
-    is(stateName) {
-      return stateName === "jump";
-    },
-    construct(view: View) {
-      movingUp.construct(view);
-      if (view.position.y <= 0) {
-        view.position.y = 0;
-        movingUp = movingUp.transform({ velocity: 0, accelaration: 0 });
-      }
-    },
-    onInit(_, previousState) {
-      if (previousState.is("move")) {
-        const jumpingAndMoving = mergeStates(this, previousState);
-
-        Object.assign(this, jumpingAndMoving);
-      }
-    },
-    onChange(view) {
-      if (view.position.y > 0) {
-        return "block";
-      }
-    },
-  };
-
-  function calculateInitialVelocity() {
-    return Math.sqrt(2 * GRAVITY * maxDistance);
+  constructor(
+    stateHandler: StateHandler,
+    private _maxDistance: number,
+    friction = 0.01
+  ) {
+    super();
+    const initialVelocity = this.calculateInitialVelocity();
+    const { Moving } = stateHandler.getStates();
+    this.movingY = new Moving(-GRAVITY, "y", null, friction, initialVelocity);
   }
-};
+
+  isJumping() {
+    return true;
+  }
+  calculateInitialVelocity() {
+    return Math.sqrt(2 * GRAVITY * this._maxDistance);
+  }
+
+  construct(view: View) {
+    this.movingY.construct(view);
+    if (view.position.y <= 0) {
+      view.position.y = 0;
+      this.movingY.accelaration = 0;
+      this.movingY.velocity = 0;
+    }
+  }
+
+  onInit(previousState: State) {
+    if (previousState.isMoving()) {
+      const jumpingAndMoving = mergeStates(this, previousState, {
+        isJumping: () => true,
+        isMoving: () => true,
+      });
+
+      console.log(jumpingAndMoving.construct.toString());
+
+      Object.assign(this, jumpingAndMoving);
+    }
+  }
+
+  onChange(nextState: State, view: View) {
+    if (view.position.y > 0) {
+      return "block";
+    }
+  }
+}

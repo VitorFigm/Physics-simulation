@@ -1,4 +1,4 @@
-import { Context } from "@app/types";
+import { Context } from "@app/models";
 import { controlPlayer } from "./controllers/player/player.controller";
 import { GraphicalAPI } from "./core/engines/graphics/graphical-api";
 import { Graphics } from "./core/engines/graphics/graphics.engine";

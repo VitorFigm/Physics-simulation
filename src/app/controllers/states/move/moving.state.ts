@@ -1,56 +1,51 @@
-import { State } from "../state-handler";
+import { State, View } from "@app/models";
+import { Injectable } from "app/core/inversion-of-control/inversion-of-control.engine";
 
-type InternalState = {
-  velocity?: number;
-  accelaration?: number;
-};
+export class Moving extends State {
+  velocity: number;
+  constructor(
+    public accelaration: number,
+    public axis: "x" | `y`,
+    private maxVelocity: number = null,
+    public friction = 0.01,
+    initialVelocity: number = 0
+  ) {
+    super();
+    this.velocity = initialVelocity;
+  }
+  isMoving() {
+    return true;
+  }
 
-type Params = {
-  accelaration: number;
-  axis: "x" | `y`;
-  friction: number;
-  initialVelocity?: number;
-  maxVelocity?: number;
-};
+  onInit(previousState: State) {
+    if (previousState instanceof Moving) {
+      this.velocity = previousState.velocity;
+    }
+  }
 
-export const move = ({
-  accelaration,
-  axis,
-  friction,
-  initialVelocity,
-  maxVelocity,
-}: Params): State<InternalState> => {
-  let internalState: InternalState = {
-    velocity: initialVelocity ?? 0,
-    accelaration,
-  };
+  construct(view: View) {
+    if (this._canAccelerate()) {
+      this.velocity += this.accelaration;
+    }
+    this.velocity *= 1 - this.friction;
+    view.position[this.axis] += this.velocity;
+  }
 
-  return {
-    is(stateName) {
-      return stateName === "move";
-    },
+  setAcceleration(newAccelaration: number) {
+    this.accelaration = newAccelaration;
+    return this;
+  }
 
-    construct(view) {
-      const isVelocityMax =
-        maxVelocity &&
-        Math.abs(internalState.velocity) >= Math.abs(maxVelocity);
+  stop() {
+    this.accelaration = 0;
+    return this;
+  }
 
-      const isOposityAcceleration =
-        internalState.velocity / internalState.accelaration < 0;
+  private _canAccelerate() {
+    const isVelocityMax =
+      this.maxVelocity && Math.abs(this.velocity) >= Math.abs(this.maxVelocity);
 
-      if (!isVelocityMax || isOposityAcceleration) {
-        internalState.velocity += internalState.accelaration;
-      }
-
-      internalState.velocity *= 1 - friction;
-      view.position[axis] += internalState.velocity;
-    },
-    transform(newInternalState) {
-      Object.assign(internalState, newInternalState);
-      return this;
-    },
-    getInternalState() {
-      return internalState;
-    },
-  };
-};
+    const isOposityAcceleration = this.velocity / this.accelaration < 0;
+    return !isVelocityMax || isOposityAcceleration;
+  }
+}

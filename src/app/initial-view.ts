@@ -1,4 +1,4 @@
-import { ControledView, View } from "@app/types";
+import { ControledView, View } from "@app/models";
 import { ValidImageName } from "assets";
 import { StateHandler } from "./controllers/states/state-handler";
 
@@ -9,8 +9,9 @@ interface Figure extends ControledView, View {
 type InitialView = {
   [key: string]: Figure;
 };
-
-const standing = new StateHandler().getStates().stand();
+const stateHandler = new StateHandler();
+const { Stading } = stateHandler.getStates();
+const standing = new Stading();
 
 export const INITIAL_VIEW: InitialView = {
   player: {
