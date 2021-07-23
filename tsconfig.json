@@ -9,7 +9,7 @@
     "baseUrl": "./src",
     "moduleResolution": "Node",
     "paths": {
-      "@app/types": ["app/models/types"],
+      "@app/models": ["app/models"],
       "@app/utils": ["app/utils"]
     },
     "experimentalDecorators": true

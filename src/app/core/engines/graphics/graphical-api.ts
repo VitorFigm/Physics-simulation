@@ -1,4 +1,4 @@
-import { GraphicalImplementation, ImageLoader } from "@app/types";
+import { GraphicalImplementation, ImageLoader } from "@app/models";
 import { assets } from "assets";
 import { graphics } from "dom-canvas";
 

@@ -1,4 +1,4 @@
-import { FrameBuilder, GraphicalContext, GraphicalAPI } from "@app/types";
+import { FrameBuilder, GraphicalContext, GraphicalAPI } from "@app/models";
 
 export abstract class Graphics {
   static drawCanvas(graphicalContext: GraphicalContext, api: GraphicalAPI) {

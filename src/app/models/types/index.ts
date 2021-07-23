@@ -1,4 +1,4 @@
-import { State } from "app/controllers/states/state-handler";
+import { State } from "../core";
 
 export type ImageLoader = ReadonlyMap<string, HTMLImageElement>;
 
@@ -9,10 +9,13 @@ export abstract class GraphicalImplementation {
 
 export type GraphicalAPI = typeof GraphicalImplementation;
 
-export type Contructor = new () => unknown;
+type Constructor<T> = new (...args: any) => T;
 
 export type Context = {
-  Inject<T>(token: new () => T): T;
+  Inject<T>(
+    token: Constructor<T>,
+    ...params: ConstructorParameters<Constructor<T>>
+  ): T;
 };
 
 export interface View {

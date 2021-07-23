@@ -1,4 +1,4 @@
-import { GraphicalContext, GraphicalImplementation } from "@app/types";
+import { GraphicalContext, GraphicalImplementation } from "@app/models";
 import { drawCanvas } from "./graphics.engine";
 
 type CanvasCut = {

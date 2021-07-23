@@ -1,4 +1,4 @@
-import { Contructor } from "@app/types";
+type Contructor = new () => unknown;
 
 type Container = Map<
   Contructor,
