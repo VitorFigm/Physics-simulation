@@ -33,8 +33,18 @@ class InversionOfControl {
         return;
       }
 
-      const { provide, useClasse } = provider;
-      setInjectableClass(provide, useClasse, provider.injectMultiples);
+      if ("useValue" in provider) {
+        class Provider {
+          constructor() {
+            return provider;
+          }
+        }
+        setInjectableClass(provider.provide, Provider, false);
+        return;
+      }
+
+      const { provide, useClass } = provider;
+      setInjectableClass(provide, useClass, provider.injectMultiples);
     });
   }
 }

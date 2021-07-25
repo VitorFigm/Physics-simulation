@@ -38,13 +38,20 @@ export type InjectableConstructor<T = unknown, P = unknown> = new (
   props?: P
 ) => T;
 
-export type Provider =
+export type Provider<T = unknown, P = unknown> =
   | {
-      provide: InjectableConstructor;
-      useClasse: InjectableConstructor;
+      provide: InjectableConstructor<T, P>;
+      useClass: InjectableConstructor<T, P>;
       //*
       /* Set it to true if you don't want the class being sigletons
        */
       injectMultiples?: boolean;
+    }
+  | {
+      provide: InjectableConstructor<T, P>;
+      useValue: T;
+      //*
+      /* Set it to true if you don't want the class being sigletons
+       */
     }
   | InjectableConstructor;

@@ -94,8 +94,6 @@ function cutSectionFromCanvas(canvas: HTMLCanvasElement, cut: CanvasCut) {
   tempCanvas.height = cut.height;
   tempCanvas.width = cut.width;
 
-  console.log(canvas.toDataURL());
-
   const context = tempCanvas.getContext("2d");
 
   type DrawParam = [number, number] | [number, number, number, number];

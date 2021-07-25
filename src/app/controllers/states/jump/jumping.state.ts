@@ -2,17 +2,17 @@ import { State, View } from "@app/models";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
 import { Moving } from "../move/moving.state";
 
-const GRAVITY = 0.1;
-
 type JumpingProps = {
   maxDistance: number;
   friction?: number;
+  gravity?: number;
 };
 
 export class Jumping extends State {
   velocity: number;
   movingY: Moving;
   movingX: Moving;
+  private _gravity: number;
   private _maxDistance: number;
 
   constructor(props: JumpingProps) {
@@ -21,12 +21,13 @@ export class Jumping extends State {
     const initialVelocity = this.calculateInitialVelocity();
 
     const friction = props.friction ?? 0.01;
+    this._gravity = props.gravity ?? 0.01;
 
     this.movingY = inject(Moving, {
       friction,
       initialVelocity,
       axis: "y",
-      initialAcceleration: -GRAVITY,
+      initialAcceleration: -this._gravity,
     });
 
     this.movingX = inject(Moving, {
@@ -39,7 +40,7 @@ export class Jumping extends State {
     return true;
   }
   calculateInitialVelocity() {
-    return Math.sqrt(2 * GRAVITY * this._maxDistance);
+    return Math.sqrt(2 * this._gravity * this._maxDistance);
   }
 
   construct(view: View) {
@@ -55,7 +56,7 @@ export class Jumping extends State {
 
   onInit(previousState: State) {
     this.movingY.velocity = this.calculateInitialVelocity();
-    this.movingY.acceleration = -GRAVITY;
+    this.movingY.acceleration = -this._gravity;
 
     if (previousState.isMoving()) {
       const previousMoving = previousState as Moving;
