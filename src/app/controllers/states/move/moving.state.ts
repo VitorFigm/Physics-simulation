@@ -23,7 +23,6 @@ export class Moving extends State {
 
   constructor(props: MovingProps) {
     super();
-    console.log(props);
     this.velocity = props.initialVelocity ?? 0;
     this.friction = props.friction ?? 0.01;
 

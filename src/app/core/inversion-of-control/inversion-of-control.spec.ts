@@ -1,9 +1,9 @@
-import { Providers } from "@app/models";
+import { Provider } from "@app/models";
 import { inject, provide } from "./inversion-of-control.engine";
 
 describe("Inversion of control", () => {
   class Token {}
-  class Dependecy {}
+  class Dependecy extends Token {}
 
   it("Should provide dependency", () => {
     provideDependency();
@@ -25,7 +25,7 @@ describe("Inversion of control", () => {
   });
 
   function provideDependency() {
-    const providers: Providers = [{ provide: Token, useClasse: Dependecy }];
+    const providers: Provider[] = [{ provide: Token, useClass: Token }];
     provide(providers);
   }
 });
