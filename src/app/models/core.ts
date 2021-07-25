@@ -13,10 +13,6 @@ export abstract class State {
     return false;
   }
 
-  isMerge() {
-    return false;
-  }
-
   onInit(previousState: State, view: View) {}
 
   onChange(nextState: State, view: View): string | boolean | void {}

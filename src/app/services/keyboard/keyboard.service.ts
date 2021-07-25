@@ -1,7 +1,5 @@
 import { Observable } from "@app/utils";
-import { Injectable } from "app/core/inversion-of-control/inversion-of-control.engine";
 
-@Injectable({ token: KeyboardService, singleton: true })
 export class KeyboardService {
   keydown$ = new Observable<string>(({ next }) => {
     addEventListener("keydown", (event) => {

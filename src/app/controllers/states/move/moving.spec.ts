@@ -3,7 +3,13 @@ import { ControledView, View } from "@app/models";
 
 describe("move", () => {
   it("should make a view move with contant velocity", () => {
-    const moving = new Moving(0, "x", 0, 1);
+    const velocity = 1;
+
+    const moving = new Moving({
+      axis: "x",
+      initialAcceleration: 0,
+      initialVelocity: velocity,
+    });
 
     const mockView: Partial<ControledView> = {
       position: { x: 0, y: 0 },
@@ -12,9 +18,11 @@ describe("move", () => {
 
     mockView.state = moving;
 
-    for (let iteration = 0; iteration < 10; iteration++) {
+    const passes = 10;
+
+    for (let iteration = 0; iteration < passes; iteration++) {
       mockView.state.construct(mockView as View);
     }
-    expect(mockView.position.x).toEqual(10);
+    expect(mockView.position.x).toEqual(passes * velocity);
   });
 });

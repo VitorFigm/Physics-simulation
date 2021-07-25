@@ -13,5 +13,6 @@
       "@app/utils": ["app/utils"]
     },
     "experimentalDecorators": true
-  }
+  },
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
 }
