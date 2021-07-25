@@ -1,15 +1,27 @@
-import { Context } from "@app/models";
+import { Provider } from "@app/models";
 import { controlPlayer } from "./controllers/player/player.controller";
+import { StateHandler } from "./controllers/states/state-handler";
 import { GraphicalAPI } from "./core/engines/graphics/graphical-api";
 import { Graphics } from "./core/engines/graphics/graphics.engine";
-import { Inject } from "./core/inversion-of-control/inversion-of-control.engine";
-import { INITIAL_VIEW } from "./initial-view";
+import { provide } from "./core/inversion-of-control/inversion-of-control.engine";
+import { createInitialView } from "./initial-view";
+import { KeyboardService } from "./services/keyboard/keyboard.service";
 
-const context = { Inject } as Context;
+import { stateProviders } from "./controllers/states/state.providers";
 
-const view = INITIAL_VIEW;
+/// providers
+{
+  const coreProviders: Provider[] = [KeyboardService];
 
-controlPlayer(context, view.player);
+  provide(coreProviders);
+  provide(stateProviders);
+}
+
+const view = createInitialView();
+/// constrols
+{
+  controlPlayer(view.player);
+}
 
 const game = () => {
   contructNextView();

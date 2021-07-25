@@ -1,27 +1,31 @@
-import { Inject, Injectable } from "./inversion-of-control.engine";
+import { Providers } from "@app/models";
+import { inject, provide } from "./inversion-of-control.engine";
 
 describe("Inversion of control", () => {
   class Token {}
+  class Dependecy {}
 
   it("Should provide dependency", () => {
-    @Injectable({ token: Token })
-    class Dependecy {}
-
-    expect(Inject(Token)).toBeInstanceOf(Dependecy);
+    provideDependency();
+    expect(inject(Token)).toBeInstanceOf(Dependecy);
   });
 
   it("Should not provide dependencies without providers", () => {
     class TokenWithoutProviders {}
-    expect(() => Inject(TokenWithoutProviders)).toThrowError();
+    expect(() => inject(TokenWithoutProviders)).toThrowError();
   });
 
-  it("Should create singleton", () => {
-    @Injectable({ token: Token, singleton: true })
-    class Dependecy {}
+  it("Should create singletons", () => {
+    provideDependency();
 
-    const instance1 = Inject(Token);
-    const instance2 = Inject(Token);
+    const instance1 = inject(Token);
+    const instance2 = inject(Token);
 
     expect(instance1).toBe(instance2);
   });
+
+  function provideDependency() {
+    const providers: Providers = [{ provide: Token, useClasse: Dependecy }];
+    provide(providers);
+  }
 });

@@ -1,22 +1,29 @@
 import { Controller, State } from "@app/models";
 import { Observable } from "@app/utils";
+import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
 import { KeyboardService } from "app/services/keyboard/keyboard.service";
+import { Jumping } from "../states/jump/jumping.state";
+import { Moving, MovingProps } from "../states/move/moving.state";
 import { StateHandler } from "../states/state-handler";
 
-export const controlPlayer: Controller = ({ Inject }, player) => {
-  const keyboard = Inject(KeyboardService);
-  const stateHandler = Inject(StateHandler);
-  const states = stateHandler.getStates();
+export const controlPlayer: Controller = (player) => {
+  const keyboard = inject(KeyboardService);
+  const { setState } = inject(StateHandler);
 
-  const accelaration = 0.1;
-  const maxVelocity = 1;
+  const initialAcceleration = 0.1;
 
-  const walking = new states.Moving(accelaration, "x", maxVelocity);
+  const walking = inject(Moving, {
+    axis: "x",
+    maxVelocity: 1,
+    initialAcceleration,
+  });
+
+  const jumping = inject(Jumping, { maxDistance: 20 });
 
   const keyDownMapper = {
-    d: () => walking.setAcceleration(accelaration),
-    a: () => walking.setAcceleration(-accelaration),
-    w: () => new states.Jumping(stateHandler, 20),
+    d: () => walking.setAcceleration(initialAcceleration),
+    a: () => walking.setAcceleration(-initialAcceleration),
+    w: () => jumping,
   };
 
   defineKeyboardControl(keyDownMapper, keyboard.listenKeyDown.bind(keyboard));
@@ -37,7 +44,7 @@ export const controlPlayer: Controller = ({ Inject }, player) => {
     Object.entries(keyMapper).forEach(([key, getNewState]) => {
       keyboardListener(key).subscribe({
         next() {
-          stateHandler.setState(player, getNewState());
+          setState(player, getNewState());
         },
       });
     });

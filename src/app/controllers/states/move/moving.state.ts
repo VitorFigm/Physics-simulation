@@ -1,18 +1,37 @@
 import { State, View } from "@app/models";
-import { Injectable } from "app/core/inversion-of-control/inversion-of-control.engine";
+
+export type MovingProps = {
+  initialAcceleration: number;
+  axis: "x" | `y`;
+  maxVelocity?: number;
+  friction?: number;
+  initialVelocity?: number;
+};
+
+// public accelaration: number,
+//     public axis: "x" | `y`,
+//     private maxVelocity: number = null,
+//     public friction = 0.01,
+//     initialVelocity: number = 0
 
 export class Moving extends State {
   velocity: number;
-  constructor(
-    public accelaration: number,
-    public axis: "x" | `y`,
-    private maxVelocity: number = null,
-    public friction = 0.01,
-    initialVelocity: number = 0
-  ) {
+  acceleration: number;
+  maxVelocity?: number;
+  friction: number;
+  axis: "x" | `y`;
+
+  constructor(props: MovingProps) {
     super();
-    this.velocity = initialVelocity;
+    console.log(props);
+    this.velocity = props.initialVelocity ?? 0;
+    this.friction = props.friction ?? 0.01;
+
+    this.acceleration = props.initialAcceleration;
+    this.axis = props.axis;
+    this.maxVelocity = props.maxVelocity;
   }
+
   isMoving() {
     return true;
   }
@@ -25,19 +44,19 @@ export class Moving extends State {
 
   construct(view: View) {
     if (this._canAccelerate()) {
-      this.velocity += this.accelaration;
+      this.velocity += this.acceleration;
     }
     this.velocity *= 1 - this.friction;
     view.position[this.axis] += this.velocity;
   }
 
   setAcceleration(newAccelaration: number) {
-    this.accelaration = newAccelaration;
+    this.acceleration = newAccelaration;
     return this;
   }
 
   stop() {
-    this.accelaration = 0;
+    this.acceleration = 0;
     return this;
   }
 
@@ -45,7 +64,7 @@ export class Moving extends State {
     const isVelocityMax =
       this.maxVelocity && Math.abs(this.velocity) >= Math.abs(this.maxVelocity);
 
-    const isOposityAcceleration = this.velocity / this.accelaration < 0;
+    const isOposityAcceleration = this.velocity / this.acceleration < 0;
     return !isVelocityMax || isOposityAcceleration;
   }
 }

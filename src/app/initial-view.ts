@@ -1,6 +1,7 @@
 import { ControledView, View } from "@app/models";
 import { ValidImageName } from "assets";
-import { StateHandler } from "./controllers/states/state-handler";
+import { Stading } from "./controllers/states/standing.state";
+import { inject } from "./core/inversion-of-control/inversion-of-control.engine";
 
 interface Figure extends ControledView, View {
   sprite: ValidImageName;
@@ -9,19 +10,19 @@ interface Figure extends ControledView, View {
 type InitialView = {
   [key: string]: Figure;
 };
-const stateHandler = new StateHandler();
-const { Stading } = stateHandler.getStates();
-const standing = new Stading();
+export const createInitialView = (): InitialView => {
+  const standing = inject(Stading);
 
-export const INITIAL_VIEW: InitialView = {
-  player: {
-    state: standing,
-    sprite: "char",
-    height: 100,
-    position: {
-      x: 20,
-      y: 0,
+  return {
+    player: {
+      state: standing,
+      sprite: "char",
+      height: 100,
+      position: {
+        x: 20,
+        y: 0,
+      },
+      width: 30,
     },
-    width: 30,
-  },
-} as const;
+  };
+};

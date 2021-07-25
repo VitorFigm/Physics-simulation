@@ -1,24 +1,38 @@
-import { Context, State, View } from "@app/models";
-import { Inject } from "app/core/inversion-of-control/inversion-of-control.engine";
+import { State, View } from "@app/models";
+import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
 import { Moving } from "../move/moving.state";
-import { StateHandler } from "../state-handler";
-import { mergeStates } from "../utils";
 
 const GRAVITY = 0.1;
+
+type JumpingProps = {
+  maxDistance: number;
+  friction?: number;
+};
 
 export class Jumping extends State {
   velocity: number;
   movingY: Moving;
+  movingX: Moving;
+  private _maxDistance: number;
 
-  constructor(
-    stateHandler: StateHandler,
-    private _maxDistance: number,
-    friction = 0.01
-  ) {
+  constructor(props: JumpingProps) {
     super();
+    this._maxDistance = props.maxDistance;
     const initialVelocity = this.calculateInitialVelocity();
-    const { Moving } = stateHandler.getStates();
-    this.movingY = new Moving(-GRAVITY, "y", null, friction, initialVelocity);
+
+    const friction = props.friction ?? 0.01;
+
+    this.movingY = inject(Moving, {
+      friction,
+      initialVelocity,
+      axis: "y",
+      initialAcceleration: -GRAVITY,
+    });
+
+    this.movingX = inject(Moving, {
+      axis: "x",
+      initialAcceleration: 0,
+    });
   }
 
   isJumping() {
@@ -30,23 +44,23 @@ export class Jumping extends State {
 
   construct(view: View) {
     this.movingY.construct(view);
-    if (view.position.y <= 0) {
+    this.movingX.construct(view);
+
+    if (view.position.y < 0) {
       view.position.y = 0;
-      this.movingY.accelaration = 0;
+      this.movingY.acceleration = 0;
       this.movingY.velocity = 0;
     }
   }
 
   onInit(previousState: State) {
+    this.movingY.velocity = this.calculateInitialVelocity();
+    this.movingY.acceleration = -GRAVITY;
+
     if (previousState.isMoving()) {
-      const jumpingAndMoving = mergeStates(this, previousState, {
-        isJumping: () => true,
-        isMoving: () => true,
-      });
-
-      console.log(jumpingAndMoving.construct.toString());
-
-      Object.assign(this, jumpingAndMoving);
+      const previousMoving = previousState as Moving;
+      this.movingX.velocity = previousMoving.velocity;
+      previousMoving.stop();
     }
   }
 

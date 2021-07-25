@@ -34,11 +34,11 @@ export class Observable<T> {
    * some criteria from a sieve function
    */
 
-  filter(sieve: Sieve<T>) {
+  filter(callback: Sieve<T>) {
     return new Observable<T>((subscription) => {
       const subscriptionSieve: Subscription<T> = {
         next(value: T) {
-          if (sieve(value)) {
+          if (callback(value)) {
             subscription.next(value);
           }
         },

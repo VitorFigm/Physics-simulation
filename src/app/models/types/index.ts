@@ -9,15 +9,6 @@ export abstract class GraphicalImplementation {
 
 export type GraphicalAPI = typeof GraphicalImplementation;
 
-type Constructor<T> = new (...args: any) => T;
-
-export type Context = {
-  Inject<T>(
-    token: Constructor<T>,
-    ...params: ConstructorParameters<Constructor<T>>
-  ): T;
-};
-
 export interface View {
   position: { x: number; y: number };
   width: number;
@@ -41,4 +32,19 @@ export interface Subscription<T> {
   error?: (error: Error) => void;
 }
 
-export type Controller = (context: Context, view: ControledView) => void;
+export type Controller = (view: ControledView) => void;
+
+export type InjectableConstructor<T = unknown, P = unknown> = new (
+  props?: P
+) => T;
+
+export type Provider =
+  | {
+      provide: InjectableConstructor;
+      useClasse: InjectableConstructor;
+      //*
+      /* Set it to true if you don't want the class being sigletons
+       */
+      injectMultiples?: boolean;
+    }
+  | InjectableConstructor;
