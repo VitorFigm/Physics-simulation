@@ -1,20 +1,20 @@
-import { GraphicalImplementation, ImageLoader } from "@app/models";
+import { GraphicalAPI, ImageLoader } from "@app/models";
 import { assets } from "assets";
 import { graphics } from "dom-canvas";
 
-const getImageLoader = () => {
-  const imageEntries = assets.map(({ name, load }) => {
-    const image = new Image();
-    image.src = load;
+export class RenderizationAPI extends GraphicalAPI {
+  graphics = graphics;
 
-    return [name, image] as [string, HTMLImageElement];
-  });
+  imageLoader = this._getImageLoader();
 
-  return new Map(imageEntries) as ImageLoader;
-};
+  private _getImageLoader() {
+    const imageEntries = assets.map(({ name, load }) => {
+      const image = new Image();
+      image.src = load;
 
-export abstract class GraphicalAPI extends GraphicalImplementation {
-  static graphics = graphics;
+      return [name, image] as [string, HTMLImageElement];
+    });
 
-  static imageLoader = getImageLoader();
+    return new Map(imageEntries) as ImageLoader;
+  }
 }

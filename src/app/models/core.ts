@@ -1,7 +1,7 @@
 import { Jumping } from "app/controllers/states/jump/jumping.state";
 import { Moving } from "app/controllers/states/move/moving.state";
 import { Stading } from "app/controllers/states/standing.state";
-import { View } from "./types";
+import { ImageLoader, View } from "./types";
 
 export abstract class State {
   isMoving(): this is Moving {
@@ -21,4 +21,9 @@ export abstract class State {
   onChange(nextState: State, view: View): string | boolean | void {}
 
   abstract construct(view: View): void;
+}
+
+export class GraphicalAPI {
+  imageLoader: ImageLoader;
+  graphics: CanvasRenderingContext2D;
 }

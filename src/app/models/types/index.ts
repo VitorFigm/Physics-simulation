@@ -2,13 +2,6 @@ import { State } from "../core";
 
 export type ImageLoader = ReadonlyMap<string, HTMLImageElement>;
 
-export abstract class GraphicalImplementation {
-  static imageLoader: ImageLoader;
-  static graphics: CanvasRenderingContext2D;
-}
-
-export type GraphicalAPI = typeof GraphicalImplementation;
-
 export interface View {
   position: { x: number; y: number };
   width: number;

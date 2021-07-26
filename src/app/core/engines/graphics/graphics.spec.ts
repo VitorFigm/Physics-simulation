@@ -1,5 +1,6 @@
-import { GraphicalContext, GraphicalImplementation } from "@app/models";
-import { drawCanvas } from "./graphics.engine";
+import { GraphicalAPI, GraphicalContext } from "@app/models";
+import { provide } from "app/core/inversion-of-control/inversion-of-control.engine";
+import { Graphics } from "./graphics.engine";
 
 type CanvasCut = {
   width: number;
@@ -8,16 +9,23 @@ type CanvasCut = {
   y: number;
 };
 
-describe("drawCanvas", () => {
+describe("Graphics", () => {
   let square: HTMLImageElement;
+  let graphicalEngine: Graphics;
+  let graphicalAPI: GraphicalAPI;
 
-  let graphicalAPI: typeof GraphicalImplementation;
+  const mockImageName = "square";
 
   beforeAll((end) => {
     square = getSquareImage(2, 2);
 
     square.onload = () => {
-      graphicalAPI = getGraphicalAPI(square);
+      graphicalAPI = {
+        imageLoader: getMockImageMap(square),
+        graphics: document.createElement("canvas").getContext("2d"),
+      };
+      provide([{ provide: GraphicalAPI, useValue: graphicalAPI }]);
+      graphicalEngine = new Graphics();
       end();
     };
   });
@@ -28,10 +36,11 @@ describe("drawCanvas", () => {
         height: square.height,
         width: square.width,
         position: { x: 0, y: 0 },
-        sprite: "square",
+        sprite: mockImageName,
       },
     };
-    drawCanvas(context, graphicalAPI);
+
+    graphicalEngine.drawCanvas(context);
     const { canvas } = graphicalAPI.graphics;
     const cut: CanvasCut = {
       x: 0,
@@ -43,36 +52,27 @@ describe("drawCanvas", () => {
     const canvasSection = cutSectionFromCanvas(canvas, cut);
     expect(canvasSection.src).toEqual(square.src);
   });
-});
 
-function getGraphicalAPI(image: HTMLImageElement) {
-  class Mock {
-    static imageLoader = getMockImageMap(image);
-    static graphics = document.createElement("canvas").getContext("2d");
+  function getMockImageMap(image: HTMLImageElement) {
+    const imageMap = new Map();
+    imageMap.set(mockImageName, image);
+    return imageMap;
   }
 
-  return Mock;
-}
+  function getSquareImage(width: number, height: number) {
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.height = height;
+    tempCanvas.width = width;
 
-function getMockImageMap(image: HTMLImageElement) {
-  const imageMap = new Map();
-  imageMap.set("square", image);
-  return imageMap;
-}
+    const tempContext = tempCanvas.getContext("2d");
+    tempContext.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-function getSquareImage(width: number, height: number) {
-  const tempCanvas = document.createElement("canvas");
-  tempCanvas.height = height;
-  tempCanvas.width = width;
+    const square = new Image();
+    square.src = tempCanvas.toDataURL();
 
-  const tempContext = tempCanvas.getContext("2d");
-  tempContext.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-  const square = new Image();
-  square.src = tempCanvas.toDataURL();
-
-  return square;
-}
+    return square;
+  }
+});
 
 /**
  * get an image of a section of a canvas with a drawing
@@ -96,12 +96,8 @@ function cutSectionFromCanvas(canvas: HTMLCanvasElement, cut: CanvasCut) {
 
   const context = tempCanvas.getContext("2d");
 
-  type DrawParam = [number, number] | [number, number, number, number];
-
-  const position: DrawParam = [cut.x, cut.y];
-  const size: DrawParam = [cut.width, cut.height];
-  const canvasTranslation: DrawParam = [0, 0];
-  const canvasWidth: DrawParam = [cut.width, cut.height];
+  const { position, size, canvasTranslation, canvasWidth } =
+    getCutCoordinates(cut);
 
   context.drawImage(
     canvas,
@@ -113,4 +109,13 @@ function cutSectionFromCanvas(canvas: HTMLCanvasElement, cut: CanvasCut) {
   const image = new Image();
   image.src = tempCanvas.toDataURL();
   return image;
+}
+
+function getCutCoordinates(cut: CanvasCut) {
+  return {
+    position: [cut.x, cut.y],
+    size: [cut.width, cut.height],
+    canvasTranslation: [0, 0],
+    canvasWidth: [cut.width, cut.height],
+  } as const;
 }
