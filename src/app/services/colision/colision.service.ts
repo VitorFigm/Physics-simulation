@@ -1,5 +1,5 @@
 import { View } from "@app/models";
-import { of, Subject } from "@app/utils";
+import { of } from "@app/utils";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
 import { NextFrameService } from "../next-frame/next-frame.service";
 
@@ -12,8 +12,6 @@ export class ColisionService {
 
   observeCollision(view: View) {
     this._observers.push(view);
-
-    console.log(this._observers);
 
     return this._nextFrameService.checkFramePass().flatMap(() => {
       return of(...this.getColliders(view));
@@ -98,8 +96,3 @@ class ComparationSquare {
 }
 
 type Point = { x: number; y: number };
-
-interface ComparationSquareParams {
-  bottomLeft: Point;
-  TopRight: Point;
-}

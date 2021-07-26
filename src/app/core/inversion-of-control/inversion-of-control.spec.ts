@@ -25,7 +25,7 @@ describe("Inversion of control", () => {
   });
 
   function provideDependency() {
-    const providers: Provider[] = [{ provide: Token, useClass: Token }];
+    const providers: Provider[] = [{ provide: Token, useClass: Dependecy }];
     provide(providers);
   }
 });

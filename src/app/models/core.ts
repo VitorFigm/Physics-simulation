@@ -1,15 +1,18 @@
+import { Jumping } from "app/controllers/states/jump/jumping.state";
+import { Moving } from "app/controllers/states/move/moving.state";
+import { Stading } from "app/controllers/states/standing.state";
 import { View } from "./types";
 
 export abstract class State {
-  isMoving() {
+  isMoving(): this is Moving {
     return false;
   }
 
-  isJumping() {
+  isJumping(): this is Jumping {
     return false;
   }
 
-  isStanding() {
+  isStanding(): this is Stading {
     return false;
   }
 

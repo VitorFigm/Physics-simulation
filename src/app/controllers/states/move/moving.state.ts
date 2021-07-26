@@ -17,12 +17,14 @@ export type MovingProps = {
 export class Moving extends State {
   velocity: number;
   acceleration: number;
+
   maxVelocity?: number;
   friction: number;
   axis: "x" | `y`;
 
   constructor(props: MovingProps) {
     super();
+
     this.velocity = props.initialVelocity ?? 0;
     this.friction = props.friction ?? 0.01;
 
@@ -35,7 +37,7 @@ export class Moving extends State {
     return true;
   }
 
-  onInit(previousState: State) {
+  onInit(previousState: State, view: View) {
     if (previousState instanceof Moving) {
       this.velocity = previousState.velocity;
     }
@@ -46,17 +48,37 @@ export class Moving extends State {
       this.velocity += this.acceleration;
     }
     this.velocity *= 1 - this.friction;
+
     view.position[this.axis] += this.velocity;
   }
 
   setAcceleration(newAccelaration: number) {
     this.acceleration = newAccelaration;
+
+    return this;
+  }
+
+  setVelocity(newVelocity: number) {
+    this.velocity = newVelocity;
     return this;
   }
 
   stop() {
     this.acceleration = 0;
     return this;
+  }
+
+  bounce() {
+    this.acceleration = -this.acceleration;
+    this.velocity = -this.velocity;
+  }
+
+  invertVelocity() {
+    this.velocity = -this.velocity;
+  }
+
+  invertAcceleration() {
+    this.acceleration = -this.acceleration;
   }
 
   private _canAccelerate() {
