@@ -1,6 +1,6 @@
-import { Provider } from "@app/models";
+import { GraphicalAPI, Provider } from "@app/models";
 import { controlPlayer } from "./controllers/player/player.controller";
-import { GraphicalAPI } from "./core/engines/graphics/graphical-api";
+import { RenderizationAPI } from "./core/engines/graphics/graphical-api";
 import { Graphics } from "./core/engines/graphics/graphics.engine";
 import {
   inject,
@@ -21,6 +21,8 @@ import { KeyboardControl } from "./controllers/player/keyboard-control/keyboard-
     KeyboardService,
     NextFrameService,
     ColisionService,
+    Graphics,
+    { provide: GraphicalAPI, useClass: RenderizationAPI },
   ];
 
   provide(coreProviders);
@@ -35,10 +37,12 @@ const view = createInitialView();
 }
 
 const nextFrameService = inject(NextFrameService);
+const graphicalEngine = inject(Graphics);
+
 nextFrameService.checkFramePass().subscribe({
   next: () => {
     contructNextView();
-    Graphics.drawCanvas(view, GraphicalAPI);
+    graphicalEngine.drawCanvas(view);
   },
 });
 
