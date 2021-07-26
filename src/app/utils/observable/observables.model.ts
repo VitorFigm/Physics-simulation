@@ -30,6 +30,26 @@ export class Observable<T> {
   }
 
   /**
+   * Flatten high order observable.
+   * When we have a observable that emits another observable, will concat two of thoses into
+   * one single observable
+   */
+  flatMap<R>(flatMapper: Mapper<T, Observable<R>>) {
+    return new Observable<R>((subscription) => {
+      const subscriptionMapper: Subscription<T> = {
+        next(value: T) {
+          flatMapper(value).subscribe(subscription);
+        },
+        error(error) {
+          subscription.error(error);
+        },
+      };
+
+      this.subscribe(subscriptionMapper);
+    });
+  }
+
+  /**
    * Prevent observable to emit values that do follow
    * some criteria from a sieve function
    */
@@ -61,6 +81,14 @@ export class Subject<T> {
     });
     this.toObservable = () => observable;
   }
-  next: (value: T) => void;
+  next(value: T) {
+    throw new Error("Subject is not contructed yet");
+  }
   toObservable: () => Observable<T>;
 }
+
+export const of = <T>(...values: T[]) => {
+  return new Observable<T>(({ next }) => {
+    values.forEach(next);
+  });
+};

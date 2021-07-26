@@ -4,10 +4,10 @@ import { Moving } from "./move/moving.state";
 import { Provider } from "@app/models";
 import { StateHandler } from "./state-handler";
 
-const providers = [Stading, Jumping, Moving, StateHandler];
+const providers: Provider[] = [Stading, Jumping, Moving, StateHandler];
 
-const createNotSingletonProvider = (provider: new () => any) => ({
-  useClasse: provider,
+const createNotSingletonProvider = (provider: Provider) => ({
+  useClass: provider,
   provide: provider,
   injectMultiples: true,
 });

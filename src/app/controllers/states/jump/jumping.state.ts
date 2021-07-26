@@ -21,7 +21,7 @@ export class Jumping extends State {
     const initialVelocity = this.calculateInitialVelocity();
 
     const friction = props.friction ?? 0.01;
-    this._gravity = props.gravity ?? 0.01;
+    this._gravity = props.gravity ?? 0.1;
 
     this.movingY = inject(Moving, {
       friction,

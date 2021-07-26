@@ -19,7 +19,7 @@ const config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "src/index.html",
-      favicon: "src/favicon.ico"
+      favicon: "src/favicon.ico",
     }),
 
     new MiniCssExtractPlugin(),
@@ -32,7 +32,7 @@ const config = {
       {
         test: /\.(ts|tsx)$/i,
         loader: "ts-loader",
-        exclude: ["/node_modules/", /\.(spec|e2e)\.ts$/],
+        exclude: ["/node_modules/", "/dist/", /\.(spec|e2e)\.ts$/],
       },
       {
         test: /\.s[ac]ss$/i,
