@@ -13,6 +13,7 @@ export class Jumping extends State {
   movingY: Moving;
   movingX: Moving;
   private _gravity: number;
+
   private _maxDistance: number;
 
   constructor(props: JumpingProps) {
@@ -21,6 +22,7 @@ export class Jumping extends State {
     const initialVelocity = this.calculateInitialVelocity();
 
     const friction = props.friction ?? 0.01;
+
     this._gravity = props.gravity ?? 0.1;
 
     this.movingY = inject(Moving, {
@@ -39,9 +41,6 @@ export class Jumping extends State {
   isJumping() {
     return true;
   }
-  calculateInitialVelocity() {
-    return Math.sqrt(2 * this._gravity * this._maxDistance);
-  }
 
   construct(view: View) {
     this.movingY.construct(view);
@@ -49,19 +48,20 @@ export class Jumping extends State {
 
     if (view.position.y < 0) {
       view.position.y = 0;
-      this.movingY.acceleration = 0;
-      this.movingY.velocity = 0;
+
+      this.movingY.setAcceleration(0);
+      this.movingY.setVelocity(0);
     }
   }
 
   onInit(previousState: State) {
-    this.movingY.velocity = this.calculateInitialVelocity();
-    this.movingY.acceleration = -this._gravity;
+    const initalJumpVelocity = this.calculateInitialVelocity();
+    this.movingY.setVelocity(initalJumpVelocity);
+    this.movingY.setAcceleration(-this._gravity);
 
     if (previousState.isMoving()) {
-      const previousMoving = previousState as Moving;
-      this.movingX.velocity = previousMoving.velocity;
-      previousMoving.stop();
+      this.movingX.setVelocity(previousState.velocity);
+      previousState.stop();
     }
   }
 
@@ -69,5 +69,25 @@ export class Jumping extends State {
     if (view.position.y > 0) {
       return "block";
     }
+  }
+
+  calculateInitialVelocity() {
+    return Math.sqrt(2 * this._gravity * this._maxDistance);
+  }
+
+  getState() {
+    const { velocity } = this;
+    return { velocity };
+  }
+
+  setVelocity(newVelocity: number) {
+    this.velocity = newVelocity;
+  }
+
+  bounce() {
+    this.movingX.bounce();
+    this.movingY.invertVelocity();
+    const bounceAccelaration = this._gravity * 3;
+    this.movingY.velocity += bounceAccelaration;
   }
 }
