@@ -10,12 +10,10 @@ interface Figure extends ControledView, View {
 type InitialView = {
   [key: string]: Figure;
 };
-export const createInitialView = (): InitialView => {
-  const standing = inject(Stading);
-
+export const createInitialView = () => {
   return {
     player: {
-      state: standing,
+      state: inject(Stading),
       sprite: "char",
       height: 100,
       position: {
@@ -24,5 +22,15 @@ export const createInitialView = (): InitialView => {
       },
       width: 30,
     },
-  };
+    enemy: {
+      state: inject(Stading),
+      sprite: "char",
+      height: 100,
+      position: {
+        x: 100,
+        y: 0,
+      },
+      width: 30,
+    },
+  } as InitialView;
 };

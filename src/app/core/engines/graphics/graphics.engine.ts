@@ -2,17 +2,16 @@ import { FrameBuilder, GraphicalContext, GraphicalAPI } from "@app/models";
 
 export abstract class Graphics {
   static drawCanvas(graphicalContext: GraphicalContext, api: GraphicalAPI) {
-    Object.values(graphicalContext).forEach((value) =>
-      Graphics.drawObject(value, api)
-    );
+    Graphics.clearCanvas(api.graphics);
+    Object.values(graphicalContext).forEach((value) => {
+      Graphics.drawObject(value, api);
+    });
   }
 
   static drawObject(
     figure: FrameBuilder,
     { graphics, imageLoader }: GraphicalAPI
   ) {
-    Graphics.clearCanvas(graphics);
-
     const position = Graphics.translatePosition(
       graphics,
       figure.position.x,

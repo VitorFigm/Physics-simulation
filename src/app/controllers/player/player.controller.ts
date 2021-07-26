@@ -1,6 +1,7 @@
 import { Controller, State } from "@app/models";
 import { Observable } from "@app/utils";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
+import { ColisionService } from "app/services/colision/colision.service";
 import { KeyboardService } from "app/services/keyboard/keyboard.service";
 import { Jumping } from "../states/jump/jumping.state";
 import { Moving, MovingProps } from "../states/move/moving.state";
@@ -19,6 +20,9 @@ export const controlPlayer: Controller = (player) => {
   });
 
   const jumping = inject(Jumping, { maxDistance: 20 });
+  const colision$ = inject(ColisionService).observeCollision(player);
+
+  colision$.subscribe({ next: console.log });
 
   const keyDownMapper = {
     d: () => walking.setAcceleration(initialAcceleration),

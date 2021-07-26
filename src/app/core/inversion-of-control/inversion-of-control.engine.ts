@@ -34,9 +34,10 @@ class InversionOfControl {
       }
 
       if ("useValue" in provider) {
+        const returnValue = () => provider.useValue;
         class Provider {
           constructor() {
-            return provider;
+            return returnValue();
           }
         }
         setInjectableClass(provider.provide, Provider, false);
