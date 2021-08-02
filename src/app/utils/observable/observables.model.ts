@@ -7,6 +7,9 @@ type Sieve<T> = (value: T) => boolean;
 type Callback<T> = (subscription: Subscription<T>) => void;
 
 export class Observable<T> {
+
+  constructor(private _callback: Callback<T>) {}
+
   subscribe(subscription: Subscription<T>) {
     this._callback(subscription);
   }
@@ -71,20 +74,32 @@ export class Observable<T> {
     });
   }
 
-  constructor(private _callback: Callback<T>) {}
 }
 
 export class Subject<T> {
+  value: T;
   constructor() {
-    const observable = new Observable<T>(({ next }) => {
-      this.next = next;
+
+    const observable = new Observable<T>(({ next }) => {      
+      this.next = (value) => {        
+        this.value = value;
+        next(value);
+      };
     });
     this.toObservable = () => observable;
   }
   next(value: T) {
-    throw new Error("Subject is not contructed yet");
+    this.value = value
   }
+
   toObservable: () => Observable<T>;
+}
+
+export class BehaviorSubject<T> extends Subject<T> {
+  constructor(private _initialValue: T) { 
+    super();
+    this.value = this._initialValue;
+  }
 }
 
 export const of = <T>(...values: T[]) => {

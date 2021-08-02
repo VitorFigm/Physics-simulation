@@ -14,10 +14,13 @@ import { controlEnemy } from "./controllers/enemy/enemy.controller";
 import { NextFrameService } from "./services/next-frame/next-frame.service";
 import { ColisionService } from "./services/colision/colision.service";
 import { KeyboardControl } from "./controllers/player/keyboard-control/keyboard-control";
+import { FightService } from "./services/fight/fight.service";
 
 /// providers
 {
   const coreProviders: Provider[] = [
+    KeyboardControl,
+    FightService,
     KeyboardService,
     NextFrameService,
     ColisionService,

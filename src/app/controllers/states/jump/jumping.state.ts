@@ -8,28 +8,27 @@ type JumpingProps = {
   gravity?: number;
 };
 
+const DEFAULT_PROPS: Partial<JumpingProps> = {
+  friction:0,
+  gravity: 0.7
+}
+
 export class Jumping extends State {
-  velocity: number;
   movingY: Moving;
   movingX: Moving;
-  private _gravity: number;
 
-  private _maxDistance: number;
 
-  constructor(props: JumpingProps) {
+
+  constructor(private _props: JumpingProps) {
     super();
-    this._maxDistance = props.maxDistance;
+    this._props = {...DEFAULT_PROPS, ...this._props}
     const initialVelocity = this.calculateInitialVelocity();
 
-    const friction = props.friction ?? 0.01;
-
-    this._gravity = props.gravity ?? 0.1;
-
     this.movingY = inject(Moving, {
-      friction,
+      friction:this._props.friction,
       initialVelocity,
       axis: "y",
-      initialAcceleration: -this._gravity,
+      initialAcceleration: -this._props.gravity,
     });
 
     this.movingX = inject(Moving, {
@@ -38,56 +37,50 @@ export class Jumping extends State {
     });
   }
 
+  onInit(previousState: State) {
+    const initalJumpVelocity = this.calculateInitialVelocity();
+    
+    this.movingY.setVelocity(initalJumpVelocity);
+    this.movingY.setAcceleration(-this._props.gravity);
+
+    if (previousState.isMoving()) {
+      this.movingX.setVelocity(previousState.velocity);
+      this.movingX.setAcceleration(previousState.acceleration);
+    }
+  }
+
   isJumping() {
     return true;
   }
 
+
   construct(view: View) {
     this.movingY.construct(view);
     this.movingX.construct(view);
-
     if (view.position.y < 0) {
       view.position.y = 0;
-
-      this.movingY.setAcceleration(0);
-      this.movingY.setVelocity(0);
-    }
-  }
-
-  onInit(previousState: State) {
-    const initalJumpVelocity = this.calculateInitialVelocity();
-    this.movingY.setVelocity(initalJumpVelocity);
-    this.movingY.setAcceleration(-this._gravity);
-
-    if (previousState.isMoving()) {
-      this.movingX.setVelocity(previousState.velocity);
-      previousState.stop();
+      this.movingY.stop();
     }
   }
 
   onChange(nextState: State, view: View) {
+    const negligibleVelocity = 0.001
+    
     if (view.position.y > 0) {
-      return "block";
+      if (nextState.isMoving()) {
+
+        this.movingX.setAcceleration(nextState.acceleration);
+        nextState.stop();
+      }
+
+      if(!nextState.isStanding()){
+        return "block";
+      }
     }
   }
 
   calculateInitialVelocity() {
-    return Math.sqrt(2 * this._gravity * this._maxDistance);
+    return Math.sqrt(2 *this._props.gravity * this._props.maxDistance);
   }
 
-  getState() {
-    const { velocity } = this;
-    return { velocity };
-  }
-
-  setVelocity(newVelocity: number) {
-    this.velocity = newVelocity;
-  }
-
-  bounce() {
-    this.movingX.bounce();
-    this.movingY.invertVelocity();
-    const bounceAccelaration = this._gravity * 3;
-    this.movingY.velocity += bounceAccelaration;
-  }
 }
