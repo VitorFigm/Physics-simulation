@@ -25,7 +25,7 @@ export interface Subscription<T> {
   error?: (error: Error) => void;
 }
 
-export type Controller = (view: ControledView) => void;
+export type Controller = (view: ControledView, ...references: View[]) => void;
 
 export type InjectableConstructor<T = unknown, P = unknown> = new (
   props?: P

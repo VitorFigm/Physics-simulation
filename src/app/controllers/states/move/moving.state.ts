@@ -8,6 +8,11 @@ export type MovingProps = {
   initialVelocity?: number;
 };
 
+const DEFAULT_PROPS: Partial<MovingProps> = {
+  friction: 0.08,
+  initialVelocity:0,
+}
+
 // public accelaration: number,
 //     public axis: "x" | `y`,
 //     private maxVelocity: number = null,
@@ -15,30 +20,24 @@ export type MovingProps = {
 //     initialVelocity: number = 0
 
 export class Moving extends State {
-  velocity: number;
   acceleration: number;
+  velocity:number
 
-  maxVelocity?: number;
-  friction: number;
-  axis: "x" | `y`;
-
-  constructor(props: MovingProps) {
+  constructor(private _props: MovingProps) {
     super();
+    this._props = {...DEFAULT_PROPS, ..._props}
 
-    this.velocity = props.initialVelocity ?? 0;
-    this.friction = props.friction ?? 0.01;
 
-    this.acceleration = props.initialAcceleration;
-    this.axis = props.axis;
-    this.maxVelocity = props.maxVelocity;
+    this.acceleration = this._props.initialAcceleration;
+    this.velocity = this._props.initialVelocity;
   }
 
   isMoving() {
     return true;
   }
 
-  onInit(previousState: State, view: View) {
-    if (previousState instanceof Moving) {
+  onInit(previousState: State, _: View) {
+    if (previousState.isMoving()) {
       this.velocity = previousState.velocity;
     }
   }
@@ -47,9 +46,15 @@ export class Moving extends State {
     if (this._canAccelerate()) {
       this.velocity += this.acceleration;
     }
-    this.velocity *= 1 - this.friction;
+    this.velocity = this.applyFriction(this.velocity)
+    view.position[this._props.axis] += this.velocity;
+  }
 
-    view.position[this.axis] += this.velocity;
+  applyFriction(velocity:number){
+    const vectorNorm = Math.abs(velocity) // Modulus(or norm) of vector
+    const direction = Math.sign(velocity)
+
+    return direction*(vectorNorm - (this._props.friction)*vectorNorm**2)
   }
 
   setAcceleration(newAccelaration: number) {
@@ -68,22 +73,18 @@ export class Moving extends State {
     return this;
   }
 
-  bounce() {
+
+  invertAcceleration() {
     this.acceleration = -this.acceleration;
-    this.velocity = -this.velocity;
   }
 
   invertVelocity() {
     this.velocity = -this.velocity;
   }
 
-  invertAcceleration() {
-    this.acceleration = -this.acceleration;
-  }
-
   private _canAccelerate() {
     const isVelocityMax =
-      this.maxVelocity && Math.abs(this.velocity) >= Math.abs(this.maxVelocity);
+      this._props.maxVelocity && Math.abs(this.velocity) >= Math.abs(this._props.maxVelocity);
 
     const isOposityAcceleration = this.velocity / this.acceleration < 0;
     return !isVelocityMax || isOposityAcceleration;

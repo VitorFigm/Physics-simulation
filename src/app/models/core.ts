@@ -1,9 +1,16 @@
+import { Attacking } from "app/controllers/states/attack/attacking.state";
 import { Jumping } from "app/controllers/states/jump/jumping.state";
 import { Moving } from "app/controllers/states/move/moving.state";
 import { Stading } from "app/controllers/states/standing.state";
-import { ImageLoader, View } from "./types";
+import { StateHandler } from "app/controllers/states/state-handler";
+import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
+import { ControledView, ImageLoader, View } from "./types";
+
 
 export abstract class State {
+  constructor(){
+  };
+
   isMoving(): this is Moving {
     return false;
   }
@@ -13,6 +20,10 @@ export abstract class State {
   }
 
   isStanding(): this is Stading {
+    return false;
+  }
+
+  isAttacking(): this is Attacking {
     return false;
   }
 

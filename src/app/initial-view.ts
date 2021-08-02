@@ -27,7 +27,7 @@ export const createInitialView = () => {
       sprite: "char",
       height: 100,
       position: {
-        x: 100,
+        x: 500,
         y: 0,
       },
       width: 30,

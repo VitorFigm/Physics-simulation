@@ -38,7 +38,7 @@ describe("KeyboardControl", () => {
     keyboardControl = new KeyboardControl({ view: mockView as ControledView });
   });
 
-  it("should setState after keydown event", (done) => {
+  it("should set state after keydown event", (done) => {
     jest
       .spyOn(mockKeyboardService, "listenKeyDown")
       .mockReturnValue(of(testKey));
@@ -50,7 +50,7 @@ describe("KeyboardControl", () => {
     }, 0);
   });
 
-  it("should setState after keyup event", (done) => {
+  it("should set state after keyup event", (done) => {
     jest.spyOn(mockKeyboardService, "listenKeyUp").mockReturnValue(of(testKey));
 
     keyboardControl.mapKeyUpEvent(mockKeyMapper);
