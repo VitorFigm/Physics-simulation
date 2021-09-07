@@ -3,7 +3,7 @@ import { of } from "@app/utils";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
 import { NextFrameService } from "../next-frame/next-frame.service";
 
-export class ColisionService {
+export class CollisionService {
   private _nextFrameService = inject(NextFrameService);
 
   private _observers: View[] = [];
@@ -50,7 +50,7 @@ class ComparationSquare {
 
   constructor(view: View) {
     const { x, y } = view.position;
-    const { width, height } = view;
+    const { width, height } = view.box;
     this._setCoordinates({ x, y }, width, height);
   }
 

@@ -1,23 +1,22 @@
 import { State } from "../core";
 
-export type ImageLoader = ReadonlyMap<string, HTMLImageElement>;
+export type Sprite = {
+  frameCount: number;
+  image: HTMLImageElement;
+};
+
+export type ImageLoader = ReadonlyMap<string, Sprite>;
 
 export interface View {
   position: { x: number; y: number };
-  width: number;
-  height: number;
-}
-
-export interface ControledView extends View {
+  box: { width: number; height: number; paddingX?: number; paddingY?: number };
+  direction: "left" | `right`;
   state: State;
-}
-
-export interface FrameBuilder extends View {
-  sprite: string;
+  sprite?: HTMLImageElement | HTMLCanvasElement;
 }
 
 export interface GraphicalContext {
-  [contentName: string]: FrameBuilder;
+  [contentName: string]: View;
 }
 
 export interface Subscription<T> {
@@ -25,7 +24,17 @@ export interface Subscription<T> {
   error?: (error: Error) => void;
 }
 
-export type Controller = (view: ControledView, ...references: View[]) => void;
+export type Unsubscriber = {
+  unsubscribe: () => void;
+};
+
+type Control<T> = {
+  next: T;
+};
+export type Controller<T = unknown> = (
+  view: View,
+  ...references: View[]
+) => void | T;
 
 export type InjectableConstructor<T = unknown, P = unknown> = new (
   props?: P

@@ -2,16 +2,22 @@ import { Subscription } from "@app/models";
 
 type Mapper<T, R> = (value: T) => R;
 
+type Tapper<T> = (value: T) => void;
+
 type Sieve<T> = (value: T) => boolean;
 
 type Callback<T> = (subscription: Subscription<T>) => void;
 
 export class Observable<T> {
-
   constructor(private _callback: Callback<T>) {}
 
   subscribe(subscription: Subscription<T>) {
-    this._callback(subscription);
+    const { threatedSubscription, unsubscribe } =
+      this._threatSubscription(subscription);
+
+    this._callback(threatedSubscription);
+
+    return { unsubscribe };
   }
 
   /**
@@ -29,6 +35,13 @@ export class Observable<T> {
       };
 
       this.subscribe(subscriptionMapper);
+    });
+  }
+
+  tap(tapper: Tapper<T>) {
+    return this.map((value) => {
+      tapper(value);
+      return value;
     });
   }
 
@@ -74,29 +87,52 @@ export class Observable<T> {
     });
   }
 
+  private _threatSubscription(subscription: Subscription<T>) {
+    let isSubscribed = true;
+    const unsubscribe = () => {
+      isSubscribed = false;
+    };
+
+    const threatedSubscription: Subscription<T> = {
+      next: (value) => {
+        if (isSubscribed) {
+          subscription.next(value);
+        }
+      },
+      error: subscription.error,
+    };
+
+    return {
+      threatedSubscription,
+      unsubscribe,
+    };
+  }
 }
 
 export class Subject<T> {
   value: T;
-  constructor() {
 
-    const observable = new Observable<T>(({ next }) => {      
-      this.next = (value) => {        
-        this.value = value;
-        next(value);
-      };
+  private _subscriptions: Subscription<T>[] = [];
+
+  constructor() {
+    const observable = new Observable<T>((subscription) => {
+      this._subscriptions.push(subscription);
     });
+
     this.toObservable = () => observable;
   }
   next(value: T) {
-    this.value = value
+    this.value = value;
+    this._subscriptions.forEach((subscription) => {
+      subscription.next(value);
+    });
   }
 
   toObservable: () => Observable<T>;
 }
 
 export class BehaviorSubject<T> extends Subject<T> {
-  constructor(private _initialValue: T) { 
+  constructor(private _initialValue: T) {
     super();
     this.value = this._initialValue;
   }

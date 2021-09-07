@@ -1,5 +1,6 @@
-import { FrameBuilder, GraphicalContext, GraphicalAPI } from "@app/models";
+import { View, GraphicalContext, GraphicalAPI } from "@app/models";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
+import { flipImage } from "app/utils/image-flipper/image-flipper";
 
 export class Graphics {
   private _api = inject(GraphicalAPI);
@@ -11,36 +12,41 @@ export class Graphics {
     });
   }
 
-  private _drawObject(figure: FrameBuilder) {
+  private _drawObject(figure: View) {
     const position = this._translatePosition(
       this._api.graphics,
       figure.position.x,
       figure.position.y,
-      figure.height
+      figure.box.height
     );
-    const loadedSprite = this._api.imageLoader.get(figure.sprite);
-    loadedSprite.width = figure.width;
-    loadedSprite.height = figure.height;
-
-    this._showImage(loadedSprite, figure, position);
+    const loadedSprite = figure.sprite;
+    if (loadedSprite) {
+      this._showImage(loadedSprite as HTMLImageElement, figure, position);
+    }
   }
 
   private _showImage(
     image: HTMLImageElement,
-    figure: FrameBuilder,
+    figure: View,
     position: { x: number; y: number }
   ) {
+    const context = this._api.graphics;
+
+    const positionScaler = figure.direction === "right" ? -1 : 1;
+    const shouldSumWidth = figure.direction === "right" ? 1 : 0;
+
+    context.save();
+    context.scale(positionScaler, 1);
+
     this._api.graphics.drawImage(
       image,
-      0,
-      0,
-      figure.width,
-      figure.height,
-      position.x,
+      positionScaler * position.x - shouldSumWidth * figure.box.width,
       position.y,
-      figure.width,
-      figure.height
+      figure.box.width,
+      figure.box.height
     );
+
+    context.restore();
   }
 
   private _clearCanvas() {

@@ -1,15 +1,44 @@
+import { Observable, Subject } from "./../utils/observable/observables.model";
 import { Attacking } from "app/controllers/states/attack/attacking.state";
 import { Jumping } from "app/controllers/states/jump/jumping.state";
 import { Moving } from "app/controllers/states/move/moving.state";
 import { Stading } from "app/controllers/states/standing.state";
-import { StateHandler } from "app/controllers/states/state-handler";
+import { ImageLoader, View } from "./types";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
-import { ControledView, ImageLoader, View } from "./types";
-
+import { StateHandler } from "app/controllers/states/state-handler";
 
 export abstract class State {
-  constructor(){
-  };
+  private _stateControl = new Subject<boolean>();
+  setState: StateHandler["setState"];
+
+  constructor() {
+    const stateHandler = inject(StateHandler);
+    this.setState = stateHandler.setState.bind(stateHandler);
+  }
+
+  checkIfStateEnded() {
+    return !this._stateControl.value;
+  }
+
+  watchStateEnd() {
+    return this._stateControl.toObservable().filter((isStateStarting) => {
+      return !isStateStarting;
+    });
+  }
+
+  watchStateStart() {
+    return this._stateControl.toObservable().filter((isStateStarting) => {
+      return isStateStarting;
+    });
+  }
+
+  startState() {
+    this._stateControl.next(true);
+  }
+
+  endState() {
+    this._stateControl.next(false);
+  }
 
   isMoving(): this is Moving {
     return false;

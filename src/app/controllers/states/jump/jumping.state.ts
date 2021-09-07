@@ -1,31 +1,32 @@
 import { State, View } from "@app/models";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
+import { DEFAULT_CONSISTENT_FRAME_RATE } from "app/services/next-frame/constants";
 import { Moving } from "../move/moving.state";
 
 type JumpingProps = {
-  maxDistance: number;
+  duration: number;
   friction?: number;
   gravity?: number;
 };
 
 const DEFAULT_PROPS: Partial<JumpingProps> = {
-  friction:0,
-  gravity: 0.7
-}
+  friction: 0,
+  gravity: 0.7,
+};
 
 export class Jumping extends State {
   movingY: Moving;
   movingX: Moving;
-
-
+  initialTime: any;
+  time: any;
 
   constructor(private _props: JumpingProps) {
     super();
-    this._props = {...DEFAULT_PROPS, ...this._props}
+    this._props = { ...DEFAULT_PROPS, ...this._props };
     const initialVelocity = this.calculateInitialVelocity();
 
     this.movingY = inject(Moving, {
-      friction:this._props.friction,
+      friction: this._props.friction,
       initialVelocity,
       axis: "y",
       initialAcceleration: -this._props.gravity,
@@ -38,9 +39,11 @@ export class Jumping extends State {
   }
 
   onInit(previousState: State) {
-    const initalJumpVelocity = this.calculateInitialVelocity();
-    
-    this.movingY.setVelocity(initalJumpVelocity);
+    this.initialTime = Date.now();
+    this.startState();
+    const initialJumpVelocity = this.calculateInitialVelocity();
+
+    this.movingY.setVelocity(initialJumpVelocity);
     this.movingY.setAcceleration(-this._props.gravity);
 
     if (previousState.isMoving()) {
@@ -53,34 +56,41 @@ export class Jumping extends State {
     return true;
   }
 
-
   construct(view: View) {
-    this.movingY.construct(view);
-    this.movingX.construct(view);
-    if (view.position.y < 0) {
+    this.time = Date.now();
+    if (!this.checkIfStateEnded()) {
+      this.movingY.construct(view);
+      this.movingX.construct(view);
+    }
+
+    this._handleStateEnding(view);
+  }
+
+  private _handleStateEnding(view: View) {
+    if (view.position.y <= 0 && !this.checkIfStateEnded()) {
       view.position.y = 0;
       this.movingY.stop();
+      this.endState();
     }
   }
 
+  getJumpingXVelocity(): number {
+    return this.movingX.velocity;
+  }
+
   onChange(nextState: State, view: View) {
-    const negligibleVelocity = 0.001
-    
     if (view.position.y > 0) {
-      if (nextState.isMoving()) {
-
-        this.movingX.setAcceleration(nextState.acceleration);
-        nextState.stop();
-      }
-
-      if(!nextState.isStanding()){
+      if (!nextState.isStanding()) {
+        console.log(!nextState.isStanding());
         return "block";
       }
     }
   }
 
   calculateInitialVelocity() {
-    return Math.sqrt(2 *this._props.gravity * this._props.maxDistance);
+    return (
+      ((this._props.duration * DEFAULT_CONSISTENT_FRAME_RATE) / 2) *
+      this._props.gravity
+    );
   }
-
 }

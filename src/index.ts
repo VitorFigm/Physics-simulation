@@ -1,2 +1,2 @@
-import "./app/app.engine";
+import "./app/game";
 import "./style.scss";

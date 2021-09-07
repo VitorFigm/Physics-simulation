@@ -2,10 +2,10 @@ import { View } from "@app/models";
 import { Observable, of } from "@app/utils";
 import { provide } from "app/core/inversion-of-control/inversion-of-control.engine";
 import { NextFrameService } from "../next-frame/next-frame.service";
-import { ColisionService } from "./colision.service";
+import { CollisionService } from "./colision.service";
 
-describe("ColisionService", () => {
-  let colisionService: ColisionService;
+describe("CollisionService", () => {
+  let collisionService: CollisionService;
   let mockNextFrameService: Partial<NextFrameService>;
   beforeEach(() => {
     mockNextFrameService = {
@@ -16,26 +16,30 @@ describe("ColisionService", () => {
 
     provide([{ provide: NextFrameService, useValue: mockNextFrameService }]);
 
-    colisionService = new ColisionService();
+    collisionService = new CollisionService();
   });
 
-  it("shoud detect colision", (done) => {
-    const mockView1: View = {
+  it("should detect collision", (done) => {
+    const mockView1: Partial<View> = {
       position: { x: 0, y: 0 },
-      width: 1,
-      height: 1,
+      box: {
+        width: 1,
+        height: 1,
+      },
     };
 
-    const mockView2: View = {
+    const mockView2: Partial<View> = {
       position: { x: 0.5, y: 0.5 },
-      width: 1,
-      height: 1,
+      box: {
+        width: 1,
+        height: 1,
+      },
     };
 
-    const colision$ = colisionService.observeCollision(mockView1);
-    colisionService.observeCollision(mockView2);
+    const collision$ = collisionService.observeCollision(mockView1 as View);
+    collisionService.observeCollision(mockView2 as View);
 
-    colision$.subscribe({
+    collision$.subscribe({
       next(value) {
         expect(value).toBe(mockView2);
         done();
@@ -43,33 +47,37 @@ describe("ColisionService", () => {
     });
   });
 
-  it("shoud not emit value when colision doesn't happens", (done) => {
-    const mockView1: View = {
+  it("should not emit value when collision doesn't happens", (done) => {
+    const mockView1: Partial<View> = {
       position: { x: 0, y: 0 },
-      width: 1,
-      height: 1,
+      box: {
+        width: 1,
+        height: 1,
+      },
     };
 
-    const mockView2: View = {
+    const mockView2: Partial<View> = {
       position: { x: 2, y: 2 },
-      width: 1,
-      height: 1,
+      box: {
+        width: 1,
+        height: 1,
+      },
     };
 
-    let colided = false;
+    let collided = false;
 
-    const colision$ = colisionService.observeCollision(mockView1);
-    colisionService.observeCollision(mockView2);
+    const collision$ = collisionService.observeCollision(mockView1 as View);
+    collisionService.observeCollision(mockView2 as View);
 
-    colision$.subscribe({
+    collision$.subscribe({
       next() {
-        colided = true;
+        collided = true;
       },
     });
 
     setTimeout(() => {
-      expect(colided).toBeFalsy();
-      done()
+      expect(collided).toBeFalsy();
+      done();
     }, 0);
   });
 });

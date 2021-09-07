@@ -1,7 +1,8 @@
+import { View } from "./models/types/index";
 import { GraphicalAPI, Provider } from "@app/models";
 import { controlPlayer } from "./controllers/player/player.controller";
 import { RenderizationAPI } from "./core/engines/graphics/graphical-api";
-import { Graphics } from "./core/engines/graphics/graphics.engine";
+import { Graphics } from "./core/engines/graphics/scene-draw/graphics.engine";
 import {
   inject,
   provide,
@@ -12,9 +13,10 @@ import { KeyboardService } from "./services/keyboard/keyboard.service";
 import { stateProviders } from "./controllers/states/state.providers";
 import { controlEnemy } from "./controllers/enemy/enemy.controller";
 import { NextFrameService } from "./services/next-frame/next-frame.service";
-import { ColisionService } from "./services/colision/colision.service";
+import { CollisionService } from "./services/colision/colision.service";
 import { KeyboardControl } from "./controllers/player/keyboard-control/keyboard-control";
 import { FightService } from "./services/fight/fight.service";
+import { DEFAULT_CONSISTENT_FRAME_RATE } from "./services/next-frame/constants";
 
 /// providers
 {
@@ -23,9 +25,10 @@ import { FightService } from "./services/fight/fight.service";
     FightService,
     KeyboardService,
     NextFrameService,
-    ColisionService,
+    CollisionService,
     Graphics,
     { provide: GraphicalAPI, useClass: RenderizationAPI },
+    RenderizationAPI,
   ];
 
   provide(coreProviders);
@@ -42,14 +45,22 @@ const view = createInitialView();
 const nextFrameService = inject(NextFrameService);
 const graphicalEngine = inject(Graphics);
 
+nextFrameService.checkFramePass(DEFAULT_CONSISTENT_FRAME_RATE).subscribe({
+  next: () => {
+    constructNextView();
+  },
+});
+
+let counter = 0;
+
 nextFrameService.checkFramePass().subscribe({
   next: () => {
-    contructNextView();
+    counter++;
     graphicalEngine.drawCanvas(view);
   },
 });
 
-function contructNextView() {
+function constructNextView() {
   Object.values(view).forEach((viewComponent) => {
     viewComponent.state.construct(viewComponent);
   });

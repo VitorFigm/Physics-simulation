@@ -1,20 +1,20 @@
-import { GraphicalAPI, ImageLoader } from "@app/models";
-import { assets } from "assets";
+import { GraphicalAPI, ImageLoader, Sprite } from "@app/models";
+import { assets, ValidImageName } from "assets";
 import { graphics } from "dom-canvas";
 
-export class RenderizationAPI extends GraphicalAPI {
+export class RenderizationAPI {
   graphics = graphics;
 
-  imageLoader = this._getImageLoader();
+  imageLoader: ReadonlyMap<ValidImageName, Sprite> = this._getImageLoader();
 
   private _getImageLoader() {
-    const imageEntries = assets.map(({ name, load }) => {
+    const imageEntries = assets.map(({ name, load, frameCount }) => {
       const image = new Image();
       image.src = load;
 
-      return [name, image] as [string, HTMLImageElement];
+      return [name, { frameCount, image }] as [ValidImageName, Sprite];
     });
 
-    return new Map(imageEntries) as ImageLoader;
+    return new Map(imageEntries);
   }
 }
