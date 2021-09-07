@@ -2,13 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="768"
+   height="576"
+   viewBox="0 0 203.2 152.4"
    version="1.1"
    id="svg5"
    inkscape:version="1.1 (c68e22c387, 2021-05-23)"
-   sodipodi:docname="char.svg"
+   sodipodi:docname="box.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -21,11 +21,12 @@
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
-     inkscape:document-units="mm"
+     inkscape:document-units="px"
      showgrid="false"
-     inkscape:zoom="0.27401876"
-     inkscape:cx="-541.9337"
-     inkscape:cy="830.23513"
+     units="px"
+     inkscape:zoom="0.38752104"
+     inkscape:cx="107.09096"
+     inkscape:cy="187.08661"
      inkscape:window-width="1920"
      inkscape:window-height="1016"
      inkscape:window-x="0"
@@ -39,11 +40,11 @@
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="fill:#000000;fill-rule:evenodd;stroke-width:0.521195"
+       style="fill:#000000;stroke-width:0.387859"
        id="rect31"
-       width="212.12839"
-       height="299.94666"
-       x="-0.70345682"
-       y="-0.58054084" />
+       width="206.87587"
+       height="153.6207"
+       x="-1.7069"
+       y="-1.7068989" />
   </g>
 </svg>

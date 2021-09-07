@@ -1,14 +1,17 @@
-import { ControledView, State } from "@app/models";
+import { View, State } from "@app/models";
+import { Stading } from "./standing.state";
 
 export class StateHandler {
-  setState(view: ControledView, newState: State) {
+  constructor() {}
+  setState(view: View, newState: State) {
     const blockChange = view.state.onChange(newState, view);
 
-    if (!blockChange) {
-      newState.onInit(view.state, view);
-
-      view.state = newState;
+    if (blockChange) {
+      return;
     }
+
+    newState.onInit(view.state, view);
+    view.state = newState;
   }
 }
 

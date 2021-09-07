@@ -1,5 +1,5 @@
 import { Moving } from "./moving.state";
-import { ControledView, View } from "@app/models";
+import { View } from "@app/models";
 
 describe("move", () => {
   it("should make a view move with constant velocity", () => {
@@ -12,7 +12,7 @@ describe("move", () => {
       friction: 0,
     });
 
-    const mockView: Partial<ControledView> = {
+    const mockView: Partial<View> = {
       position: { x: 0, y: 0 },
       state: moving,
     };

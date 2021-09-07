@@ -1,4 +1,4 @@
-import { ControledView, State, View } from "@app/models";
+import { State, View } from "@app/models";
 import { of } from "@app/utils";
 import { StateHandler } from "app/controllers/states/state-handler";
 import { provide } from "app/core/inversion-of-control/inversion-of-control.engine";
@@ -10,7 +10,7 @@ describe("KeyboardControl", () => {
   let mockKeyboardService: Partial<KeyboardService>;
   let setStateSpy: jest.SpyInstance;
 
-  const mockView: Partial<ControledView> = {};
+  const mockView: Partial<View> = {};
   const testKey = "a";
   const mockState: Partial<State> = {};
 
@@ -35,7 +35,9 @@ describe("KeyboardControl", () => {
       { provide: KeyboardService, useValue: mockKeyboardService },
       { provide: StateHandler, useValue: mockStateHandler },
     ]);
-    keyboardControl = new KeyboardControl({ view: mockView as ControledView });
+    keyboardControl = new KeyboardControl({
+      view: mockView as View,
+    });
   });
 
   it("should set state after keydown event", (done) => {

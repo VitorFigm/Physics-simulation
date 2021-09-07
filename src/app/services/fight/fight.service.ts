@@ -25,8 +25,6 @@ export class FightService {
 
   dealDamageInFighter(fighterView: View, damage: number) {
     const fighterSubject$ = this._fightersMap.get(fighterView);
-    console.log(fighterSubject$);
-    
 
     const newLife = fighterSubject$.value.life - damage;
     fighterSubject$.next({ life: newLife });
