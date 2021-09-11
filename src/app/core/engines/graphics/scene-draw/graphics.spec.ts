@@ -33,7 +33,7 @@ describe("Graphics", () => {
         position: { x: 0, y: 0 },
         direction: "left",
         sprite: square,
-        state: {} as any,
+        stateMachine: {} as any,
       },
     };
 

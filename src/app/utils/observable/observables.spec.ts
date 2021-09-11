@@ -1,4 +1,4 @@
-import { Observable, of, Subject } from "./observables.model";
+import { Observable, of, Subject } from "./observables";
 
 describe("Observable", () => {
   const valueToEmmit = 1;
@@ -27,11 +27,11 @@ describe("Observable", () => {
     });
   });
 
-  describe("flatMap", () => {
+  describe("concatMap", () => {
     it("should flat high order observables", () => {
       const valueToMap = 0;
 
-      const maped$ = observable$.flatMap((value) => of(valueToMap));
+      const maped$ = observable$.concatMap((value) => of(valueToMap));
 
       maped$.subscribe({
         next(value) {

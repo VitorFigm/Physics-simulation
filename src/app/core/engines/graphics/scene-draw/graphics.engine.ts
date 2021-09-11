@@ -28,19 +28,19 @@ export class Graphics {
   private _showImage(
     image: HTMLImageElement,
     figure: View,
-    position: { x: number; y: number }
+    position: Position
   ) {
     const context = this._api.graphics;
 
-    const positionScaler = figure.direction === "right" ? -1 : 1;
-    const shouldSumWidth = figure.direction === "right" ? 1 : 0;
-
     context.save();
-    context.scale(positionScaler, 1);
+
+    if (figure.direction === "left") {
+      this._flipFigure(position, figure.box.width, context);
+    }
 
     this._api.graphics.drawImage(
       image,
-      positionScaler * position.x - shouldSumWidth * figure.box.width,
+      position.x,
       position.y,
       figure.box.width,
       figure.box.height
@@ -49,11 +49,25 @@ export class Graphics {
     context.restore();
   }
 
+  private _flipFigure(
+    position: Position,
+    figureWidth: number,
+    context: CanvasRenderingContext2D
+  ) {
+    position.x = -position.x - figureWidth;
+    const flipScaler = -1;
+    context.scale(flipScaler, 1);
+  }
+
   private _clearCanvas() {
     const { width, height } = this._api.graphics.canvas;
     this._api.graphics.clearRect(0, 0, width, height);
   }
 
+  /**
+   * Transform the canvas coordinate system into cartesian (so going up means increasing y coordinate ) with
+   * origin at bottom left of the window.
+   */
   private _translatePosition(
     graphics: CanvasRenderingContext2D,
     x: number,
@@ -66,3 +80,5 @@ export class Graphics {
     };
   }
 }
+
+type Position = { x: number; y: number };

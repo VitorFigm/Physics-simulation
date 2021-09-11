@@ -1,23 +1,51 @@
-import { Observable } from "@app/utils";
+import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
+import { Observable, of, Subject } from "@app/utils";
+import { NextFrameService } from "../next-frame/next-frame.service";
+import { PROCESS_FRAME_RATE } from "../next-frame/constants";
 
 export class KeyboardService {
-  keydown$ = new Observable<string>(({ next }) => {
+  private _keydown$ = new Subject<string>();
+  private _keyup$ = new Subject<string>();
+
+  private _nextFrameService = inject(NextFrameService);
+
+  constructor() {
     addEventListener("keydown", (event) => {
-      next(event.key.toLocaleLowerCase());
+      this._keydown$.next(event.key.toLocaleLowerCase());
     });
-  });
 
-  keyup$ = new Observable<string>(({ next }) => {
     addEventListener("keyup", (event) => {
-      next(event.key.toLocaleLowerCase());
+      this._keyup$.next(event.key.toLocaleLowerCase());
     });
-  });
-
-  listenKeyDown(key: string) {
-    return this.keydown$.filter((value) => value === key);
   }
 
-  listenKeyUp(key: string) {
-    return this.keyup$.filter((value) => value === key);
+  private get _keypress$() {
+    const pressedKeys = new Map();
+
+    this._keydown$.toObservable().subscribe({
+      next: (key) => {
+        pressedKeys.set(key, true);
+      },
+    });
+
+    this._keyup$.toObservable().subscribe({
+      next: (key) => {
+        pressedKeys.delete(key);
+      },
+    });
+
+    return this._nextFrameService
+      .checkFramePass(PROCESS_FRAME_RATE)
+      .concatMap(() => {
+        return of(...pressedKeys.keys());
+      });
   }
+
+  listenKeyPress = (key: string) => {
+    return this._keypress$.filter((value) => value === key);
+  };
+
+  listenKeyUp = (key: string) => {
+    return this._keyup$.toObservable().filter((value) => value === key);
+  };
 }

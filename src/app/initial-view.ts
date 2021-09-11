@@ -1,5 +1,4 @@
 import { GraphicalContext } from "@app/models";
-import { Stading } from "./controllers/states/standing.state";
 import { RenderizationAPI } from "./core/engines/graphics/graphical-api";
 import { inject } from "./core/inversion-of-control/inversion-of-control.engine";
 
@@ -8,22 +7,21 @@ export const createInitialView = () => {
 
   return {
     player: {
-      state: inject(Stading),
-      direction: "left",
+      sprite: api.imageLoader.get("box").image,
+      direction: "right",
       box: {
         height: 200,
         width: 100,
       },
 
       position: {
-        x: 20,
+        x: 0,
         y: 0,
       },
     },
     enemy: {
-      state: inject(Stading),
-      sprite: api.imageLoader.get("char_idle").image,
-      direction: "right",
+      sprite: api.imageLoader.get("box").image,
+      direction: "left",
       box: {
         height: 100,
         width: 30,

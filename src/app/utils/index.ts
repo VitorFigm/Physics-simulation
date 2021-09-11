@@ -1,1 +1,1 @@
-export * from './observable/observables.model'
+export * from './observable/observables'
