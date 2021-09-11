@@ -10,18 +10,15 @@ import {
 import { createInitialView } from "./initial-view";
 import { KeyboardService } from "./services/keyboard/keyboard.service";
 
-import { stateProviders } from "./controllers/states/state.providers";
-import { controlEnemy } from "./controllers/enemy/enemy.controller";
+import { stateProviders } from "./controllers/states/state-providers";
 import { NextFrameService } from "./services/next-frame/next-frame.service";
 import { CollisionService } from "./services/colision/colision.service";
-import { KeyboardControl } from "./controllers/player/keyboard-control/keyboard-control";
 import { FightService } from "./services/fight/fight.service";
-import { DEFAULT_CONSISTENT_FRAME_RATE } from "./services/next-frame/constants";
+import { PROCESS_FRAME_RATE } from "./services/next-frame/constants";
 
 /// providers
 {
   const coreProviders: Provider[] = [
-    KeyboardControl,
     FightService,
     KeyboardService,
     NextFrameService,
@@ -39,13 +36,12 @@ const view = createInitialView();
 /// controls
 {
   controlPlayer(view.player);
-  controlEnemy(view.enemy);
 }
 
 const nextFrameService = inject(NextFrameService);
 const graphicalEngine = inject(Graphics);
 
-nextFrameService.checkFramePass(DEFAULT_CONSISTENT_FRAME_RATE).subscribe({
+nextFrameService.checkFramePass(PROCESS_FRAME_RATE).subscribe({
   next: () => {
     constructNextView();
   },
@@ -62,6 +58,6 @@ nextFrameService.checkFramePass().subscribe({
 
 function constructNextView() {
   Object.values(view).forEach((viewComponent) => {
-    viewComponent.state.construct(viewComponent);
+    viewComponent.stateMachine?.executeRoutine(viewComponent);
   });
 }

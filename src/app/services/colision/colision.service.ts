@@ -13,7 +13,7 @@ export class CollisionService {
   observeCollision(view: View) {
     this._observers.push(view);
 
-    return this._nextFrameService.checkFramePass().flatMap(() => {
+    return this._nextFrameService.checkFramePass().concatMap(() => {
       return of(...this.getColliders(view));
     });
   }

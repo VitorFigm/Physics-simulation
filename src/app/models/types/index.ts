@@ -1,4 +1,6 @@
-import { State } from "../core";
+import { Observable } from "@app/utils";
+import { State } from "app/controllers/states/model/state.model";
+import { FiniteStateMachine } from "app/controllers/states/state-machine";
 
 export type Sprite = {
   frameCount: number;
@@ -11,7 +13,7 @@ export interface View {
   position: { x: number; y: number };
   box: { width: number; height: number; paddingX?: number; paddingY?: number };
   direction: "left" | `right`;
-  state: State;
+  stateMachine?: FiniteStateMachine;
   sprite?: HTMLImageElement | HTMLCanvasElement;
 }
 
@@ -19,14 +21,14 @@ export interface GraphicalContext {
   [contentName: string]: View;
 }
 
-export interface Subscription<T> {
+export interface Subscriber<T> {
   next: (value: T) => void;
   error?: (error: Error) => void;
 }
 
-export type Unsubscriber = {
+export interface Subscription {
   unsubscribe: () => void;
-};
+}
 
 type Control<T> = {
   next: T;
@@ -57,3 +59,6 @@ export type Provider<T = unknown, P = unknown> =
        */
     }
   | InjectableConstructor;
+
+export type Action = "goLeft" | `goRight` | `jump` | `attack`;
+export type StateName = "standing" | "moving";

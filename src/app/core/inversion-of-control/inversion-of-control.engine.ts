@@ -70,17 +70,17 @@ const getInjectableInstance = <T, P>(
   const isNotSingleton = injection.injectMultiples;
 
   if (isNotSingleton) {
-    return getInstace(injection.Class, props) as T;
+    return getInstance(injection.Class, props) as T;
   }
 
   if (!injection.instance) {
-    injection.instance = getInstace(injection.Class, props);
+    injection.instance = getInstance(injection.Class, props);
   }
 
   return injection.instance as T;
 };
 
-const getInstace = <T, P>(Class: InjectableConstructor<T, P>, props: P) => {
+const getInstance = <T, P>(Class: InjectableConstructor<T, P>, props: P) => {
   return props ? new Class(props) : new Class();
 };
 

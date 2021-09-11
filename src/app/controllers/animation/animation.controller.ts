@@ -1,5 +1,5 @@
 import { Sprite } from "../../models/types/index";
-import { Controller, Unsubscriber, View } from "@app/models";
+import { Controller, Subscription, View } from "@app/models";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
 import { NextFrameService } from "../../services/next-frame/next-frame.service";
 import { cropImage } from "app/utils/image-cropper/image-cropper";
@@ -10,7 +10,7 @@ export type AnimationControl = {
 
 export const animateView: Controller<AnimationControl> = (view: View) => {
   const nextFrameService = inject(NextFrameService);
-  let animationControl: Unsubscriber;
+  let animationControl: Subscription;
   return { next: startAnimation };
 
   function startAnimation(sprite: Sprite, duration: number, invert = false) {

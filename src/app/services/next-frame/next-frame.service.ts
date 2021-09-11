@@ -1,18 +1,23 @@
 import { BehaviorSubject, Observable } from "@app/utils";
-import { DEFAULT_CONSISTENT_FRAME_RATE, MILLISECONDS_IN_A_SECOND } from "./constants";
+import { PROCESS_FRAME_RATE, MILLISECONDS_IN_A_SECOND } from "./constants";
 
 export class NextFrameService {
   private _smoothFramePass$: Observable<boolean>;
   private _consistentFramePass$: Observable<number>;
-  private _isObservingFraming: boolean = true;
+  private _shouldStopAnimation: boolean = false;
 
-  private _consistentBaseFrameRate = DEFAULT_CONSISTENT_FRAME_RATE;
+  private _consistentBaseFrameRate = PROCESS_FRAME_RATE;
 
   constructor() {
     const callback = this._getRecursiveCallback();
-    this._smoothFramePass$ = new Observable<boolean>(({ next }) => {
-      callback(next);
-    });
+    this._smoothFramePass$ = new Observable<boolean>(
+      ({ next }) => {
+        callback(next);
+      },
+      () => {
+        this._shouldStopAnimation = true;
+      }
+    );
 
     this.setConsistentCallback();
   }
@@ -20,11 +25,12 @@ export class NextFrameService {
   private _getRecursiveCallback() {
     const callback = (next: (param: boolean) => void) => {
       next(true);
-      if (this._isObservingFraming) {
-        requestAnimationFrame(() => {
-          callback(next);
-        });
+      if (this._shouldStopAnimation) {
+        return;
       }
+      requestAnimationFrame(() => {
+        callback(next);
+      });
     };
 
     return callback;
@@ -57,9 +63,5 @@ export class NextFrameService {
     return this._consistentFramePass$.filter((time) => {
       return time % step === 0;
     });
-  }
-
-  stopFrameObservation() {
-    this._isObservingFraming = false;
   }
 }

@@ -6,7 +6,7 @@ describe("KeyboardService", () => {
   it("should detect key pressed", (end) => {
     const keyToPress = "a";
 
-    keyboardService.listenKeyDown(keyToPress).subscribe({
+    keyboardService.listenKeyPress(keyToPress).subscribe({
       next(key) {
         expect(key).toEqual(keyToPress);
         end();
