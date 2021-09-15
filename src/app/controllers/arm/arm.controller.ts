@@ -33,9 +33,11 @@ export const controlArm = (
       stateMachine,
       armLength,
     });
+    initialState.listenActions();
+
     stateMachine.setState(initialState);
 
-    inject(ControllingArm, { stateMachine, armLength });
+    inject(ControllingArm, { stateMachine, arm }).listenActions();
 
     mouseService = inject(MouseService);
   }

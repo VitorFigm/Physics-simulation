@@ -11,6 +11,7 @@ export class Standing extends State<FighterAction, FighterStateName> {
   constructor(props: StadingProps) {
     super(props.stateMachine);
   }
-  onInit() {}
-  execute(view: View) {}
+  onInit() { }
+  listenActions() { }
+  execute(view: View) { }
 }

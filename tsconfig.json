@@ -8,13 +8,21 @@
     "module": "es6",
     "target": "ES2020",
     "allowJs": false,
+    "sourceMap": true,
     "baseUrl": "./src",
     "moduleResolution": "Node",
     "paths": {
-      "@app/models": ["app/models"],
-      "@app/utils": ["app/utils"]
+      "@app/models": [
+        "app/models"
+      ],
+      "@app/utils": [
+        "app/utils"
+      ]
     },
     "experimentalDecorators": true
   },
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

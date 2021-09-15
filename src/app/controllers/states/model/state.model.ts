@@ -5,20 +5,21 @@ type TransitionOptions<
   DataType = Record<string, unknown>,
   Action = string,
   StateName = string
-> = {
-  from: StateName;
-  on: Action;
-  do?: (previousState: any) => DataType | void;
-};
+  > = {
+    from: StateName;
+    on: Action;
+    do?: (previousState: any) => DataType | void;
+  };
 
 export abstract class State<Action, StateName> {
   abstract name: StateName;
 
   private _subscriptions: Subscription[] = [];
-  constructor(private stateMachine: FiniteStateMachine<Action, StateName>) {}
+  constructor(private stateMachine: FiniteStateMachine<Action, StateName>) { }
 
   abstract onInit(data: unknown): void;
   abstract execute(view: View): void;
+  abstract listenActions(): void
 
   clearSubscriptions() {
     this._subscriptions.forEach((subscription) => {

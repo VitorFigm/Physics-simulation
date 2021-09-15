@@ -1,21 +1,24 @@
 import { FighterAction, FighterStateName, View } from "@app/models";
+import {
+  LEFT_DIRECTION,
+  RIGHT_DIRECTION,
+} from "app/services/next-frame/constants";
 import { Jumping } from "../jumping/jumping.state";
 import { State } from "../model/state.model";
 import { FiniteStateMachine } from "../state-machine";
 
-interface MovingProps {
-  shouldSetTransitions?: boolean;
+export interface MovingProps {
   stateMachine: FiniteStateMachine;
   maxVelocity?: number;
-  initialAcceleration: number;
+  initialAcceleration?: number;
   axis: "x" | "y" | "angle";
   friction?: number;
 }
 
 const DEFAULT_PROPS = {
-  shouldSetTransitions: true,
   friction: 0.15,
   maxVelocity: 1000,
+  initialAcceleration: 0,
 };
 
 export class Moving extends State<FighterAction, FighterStateName> {
@@ -29,18 +32,18 @@ export class Moving extends State<FighterAction, FighterStateName> {
     this._props = { ...DEFAULT_PROPS, ..._props };
     this._validateMaxVelocity();
     this.acceleration = this._props.initialAcceleration;
+  }
 
-    if (this._props.shouldSetTransitions) {
-      this.setTransition({ from: "standing", on: "goLeft" });
-      this.setTransition({ from: "standing", on: "goRight" });
-      this.setTransition({
-        from: "jumping",
-        on: "endJump",
-        do: (jumping: Jumping) => {
-          this.velocity = jumping.movingX.velocity;
-        },
-      });
-    }
+  listenActions() {
+    this.setTransition({ from: "standing", on: "goLeft" });
+    this.setTransition({ from: "standing", on: "goRight" });
+    this.setTransition({
+      from: "jumping",
+      on: "endJump",
+      do: (jumping: Jumping) => {
+        this.velocity = jumping.movingX.velocity;
+      },
+    });
   }
 
   onInit = () => {
@@ -48,11 +51,11 @@ export class Moving extends State<FighterAction, FighterStateName> {
     this.acceleration = this._props.initialAcceleration;
 
     this.on("goLeft", () => {
-      this.accelerate("left");
+      this.accelerate(LEFT_DIRECTION);
     });
 
     this.on("goRight", () => {
-      this.accelerate("right");
+      this.accelerate(RIGHT_DIRECTION);
     });
   };
 
@@ -66,11 +69,9 @@ export class Moving extends State<FighterAction, FighterStateName> {
     this._moveView(view);
   };
 
-  accelerate = (direction?: "left" | "right") => {
+  accelerate = (direction?: 1 | -1) => {
     if (direction) {
-      const sign = direction === "right" ? 1 : -1;
-      console.log(sign);
-      this.velocity += sign * Math.abs(this.acceleration);
+      this.velocity += direction * Math.abs(this.acceleration);
       return;
     }
 
