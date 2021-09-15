@@ -11,16 +11,15 @@ export class KeyboardService {
 
   constructor() {
     addEventListener("keydown", (event) => {
-      this._keydown$.next(event.key.toLocaleLowerCase());
+      this._keydown$.next(this.threatKeys(event.key));
     });
 
     addEventListener("keyup", (event) => {
-      this._keyup$.next(event.key.toLocaleLowerCase());
+      this._keyup$.next(this.threatKeys(event.key));
     });
   }
-
   private get _keypress$() {
-    const pressedKeys = new Map();
+    const pressedKeys = new Map<string, boolean>();
 
     this._keydown$.toObservable().subscribe({
       next: (key) => {
@@ -41,11 +40,22 @@ export class KeyboardService {
       });
   }
 
+  threatKeys(key: string) {
+    if (key === " ") {
+      return "space";
+    }
+
+    return key.toLocaleLowerCase();
+  }
+
   listenKeyPress = (key: string) => {
-    return this._keypress$.filter((value) => value === key);
+    return this._keypress$.filter((pressedKey) => pressedKey === key);
   };
 
   listenKeyUp = (key: string) => {
-    return this._keyup$.toObservable().filter((value) => value === key);
+    return this._keyup$
+      .toObservable()
+      .filter((value) => value === key)
+      .map(Boolean);
   };
 }

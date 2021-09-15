@@ -3,7 +3,7 @@ export const flipImage = (image: HTMLImageElement, convertToImage = false) => {
   imageCanvas.height = image.height;
   imageCanvas.width = image.width;
 
-  const context = imageCanvas.getContext("2d");
+  const context = imageCanvas.getContext("2d") as CanvasRenderingContext2D;
   context.translate(image.width, 0);
   context.scale(-1, 1);
   context.drawImage(image, 0, 0);

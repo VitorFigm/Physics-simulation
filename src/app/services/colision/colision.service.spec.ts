@@ -21,7 +21,7 @@ describe("CollisionService", () => {
 
   it("should detect collision", (done) => {
     const mockView1: Partial<View> = {
-      position: { x: 0, y: 0 },
+      position: { x: 0, y: 0, angle: 0 },
       box: {
         width: 1,
         height: 1,
@@ -29,7 +29,7 @@ describe("CollisionService", () => {
     };
 
     const mockView2: Partial<View> = {
-      position: { x: 0.5, y: 0.5 },
+      position: { x: 0.5, y: 0.5, angle: 0 },
       box: {
         width: 1,
         height: 1,
@@ -49,7 +49,7 @@ describe("CollisionService", () => {
 
   it("should not emit value when collision doesn't happens", (done) => {
     const mockView1: Partial<View> = {
-      position: { x: 0, y: 0 },
+      position: { x: 0, y: 0, angle: 0 },
       box: {
         width: 1,
         height: 1,
@@ -57,7 +57,7 @@ describe("CollisionService", () => {
     };
 
     const mockView2: Partial<View> = {
-      position: { x: 2, y: 2 },
+      position: { x: 2, y: 2, angle: 0 },
       box: {
         width: 1,
         height: 1,

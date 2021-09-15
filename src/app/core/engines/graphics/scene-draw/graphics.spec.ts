@@ -15,7 +15,9 @@ describe("Graphics", () => {
 
     square.onload = () => {
       graphicalAPI = {
-        graphics: document.createElement("canvas").getContext("2d"),
+        graphics: document
+          .createElement("canvas")
+          .getContext("2d") as CanvasRenderingContext2D,
       };
       provide([{ provide: GraphicalAPI, useValue: graphicalAPI }]);
       graphicalEngine = new Graphics();
@@ -30,15 +32,14 @@ describe("Graphics", () => {
           height: square.height,
           width: square.width,
         },
-        position: { x: 0, y: 0 },
-        direction: "left",
+        position: { x: square.width / 2, y: 0, angle: 0 },
         sprite: square,
         stateMachine: {} as any,
       },
     };
 
     graphicalEngine.drawCanvas(context);
-    const { canvas } = graphicalAPI.graphics;
+    const { canvas } = graphicalAPI.graphics as CanvasRenderingContext2D;
     const cut = {
       x: 0,
       y: canvas.height - square.height,
@@ -65,7 +66,7 @@ describe("Graphics", () => {
     tempCanvas.height = height;
     tempCanvas.width = width;
 
-    const tempContext = tempCanvas.getContext("2d");
+    const tempContext = tempCanvas.getContext("2d") as CanvasRenderingContext2D;
     tempContext.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
     const square = new Image();

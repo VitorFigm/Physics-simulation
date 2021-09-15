@@ -29,12 +29,10 @@ export const cropImage = (
   cropImageCanvas.height = cut.height;
   cropImageCanvas.width = cut.width;
 
-  const context = cropImageCanvas.getContext("2d");
+  const context = cropImageCanvas.getContext("2d") as CanvasRenderingContext2D;
 
   const { position, size, canvasTranslation, canvasWidth } =
     getCutCoordinates(cut);
-  console.log();
-
   context.drawImage(
     image,
     ...position,

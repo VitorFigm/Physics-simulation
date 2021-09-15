@@ -1,53 +1,80 @@
-import { StateName, View } from "@app/models";
+import { FighterAction, FighterStateName, View } from "@app/models";
+import { Jumping } from "../jumping/jumping.state";
 import { State } from "../model/state.model";
 import { FiniteStateMachine } from "../state-machine";
 
 interface MovingProps {
+  shouldSetTransitions?: boolean;
   stateMachine: FiniteStateMachine;
   maxVelocity?: number;
-  acceleration: number;
-  axis: "x" | "y";
+  initialAcceleration: number;
+  axis: "x" | "y" | "angle";
   friction?: number;
 }
 
 const DEFAULT_PROPS = {
+  shouldSetTransitions: true,
   friction: 0.15,
   maxVelocity: 1000,
 };
 
-export class Moving extends State {
-  name: StateName = "moving";
+export class Moving extends State<FighterAction, FighterStateName> {
+  name: FighterStateName = "moving";
   velocity: number = 0;
-  constructor(private _props: MovingProps) {
+  acceleration: number;
+  private _props: Required<MovingProps>;
+
+  constructor(_props: MovingProps) {
     super(_props.stateMachine);
     this._props = { ...DEFAULT_PROPS, ..._props };
     this._validateMaxVelocity();
+    this.acceleration = this._props.initialAcceleration;
 
-    this.setTransition({ from: "standing", on: "goLeft" });
-    this.setTransition({ from: "standing", on: "goRight" });
+    if (this._props.shouldSetTransitions) {
+      this.setTransition({ from: "standing", on: "goLeft" });
+      this.setTransition({ from: "standing", on: "goRight" });
+      this.setTransition({
+        from: "jumping",
+        on: "endJump",
+        do: (jumping: Jumping) => {
+          this.velocity = jumping.movingX.velocity;
+        },
+      });
+    }
   }
 
   onInit = () => {
     this.velocity = 0;
+    this.acceleration = this._props.initialAcceleration;
+
     this.on("goLeft", () => {
       this.accelerate("left");
     });
 
     this.on("goRight", () => {
-      console.log("test");
       this.accelerate("right");
     });
   };
 
-  execute = (view: View) => {
+  execute = (view: View, shoudlAccelerate: boolean = false) => {
+    if (shoudlAccelerate) {
+      this.accelerate();
+    }
+
     this._applyFriction();
     this._limitVelocity();
     this._moveView(view);
   };
 
-  accelerate = (direction: "left" | "right") => {
-    const sign = direction === "right" ? 1 : -1;
-    this.velocity += sign * this._props.acceleration;
+  accelerate = (direction?: "left" | "right") => {
+    if (direction) {
+      const sign = direction === "right" ? 1 : -1;
+      console.log(sign);
+      this.velocity += sign * Math.abs(this.acceleration);
+      return;
+    }
+
+    this.velocity += this.acceleration;
   };
 
   private _moveView = (view: View) => {
@@ -56,7 +83,6 @@ export class Moving extends State {
 
   private _limitVelocity() {
     if (Math.abs(this.velocity) > this._props.maxVelocity) {
-      console.log("limit");
       const currentDirection = Math.sign(this.velocity);
       this.velocity = currentDirection * this._props.maxVelocity;
     }
