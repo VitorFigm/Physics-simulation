@@ -50,17 +50,18 @@ export class NextFrameService {
     }, step);
   }
 
-  checkFramePass(fps: number = null) {
+  checkFramePass(fps?: number) {
     if (!fps) {
       return this._smoothFramePass$;
     }
-    return this._getAdjustedFrameEmitter(fps).map(Boolean);
+
+    return this._getAdjustedFrameEmitter(fps)?.map(Boolean);
   }
 
   private _getAdjustedFrameEmitter(fps: number) {
     const step = Math.round(this._consistentBaseFrameRate / fps);
 
-    return this._consistentFramePass$.filter((time) => {
+    return this._consistentFramePass$?.filter((time) => {
       return time % step === 0;
     });
   }

@@ -1,18 +1,27 @@
-import { Action, Subscription, View } from "@app/models";
-import { Observable, Subject } from "../../utils/observable/observables";
+import { View } from "@app/models";
+import { Subject } from "../../utils/observable/observables";
 import { State } from "./model/state.model";
 
-export class FiniteStateMachine {
-  private _action$ = new Subject<Action>();
-  private _state: State;
+type Emission<T> = {
+  action: T;
+  data?: Record<string, unknown>;
+};
+
+export class FiniteStateMachine<Action = any, StateName = any> {
+  private _action$ = new Subject<Emission<Action>>();
+  private _state: State<Action, StateName>;
+
+  get currentState() {
+    return this._state;
+  }
 
   constructor() {}
 
   action$ = this._action$.toObservable();
 
-  setState(state: State, data?: unknown) {
+  setState<T extends string>(state: State<Action, T>, data?: unknown) {
     this._state?.clearSubscriptions();
-    this._state = state;
+    this._state = state as any;
     this._state.onInit(data);
   }
 
@@ -20,11 +29,11 @@ export class FiniteStateMachine {
     this._state.execute(view);
   }
 
-  emit(action: Action) {
-    this._action$.next(action);
+  emit(action: Action, data?: any) {
+    this._action$.next({ action, data });
   }
 
   getCurrentStateName() {
-    return this._state?.name;
+    return this._state?.name as StateName;
   }
 }

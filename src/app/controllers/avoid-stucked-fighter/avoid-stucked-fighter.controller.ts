@@ -19,9 +19,9 @@ export const avoidStuckedFighter: Controller = (
 
   function defineNewXPosition() {
     const possibleXPosition1 =
-      enemyView.position.x - fighterView.box.width - margin;
+      enemyView.position.x - fighterView.box.width / 2 - margin;
     const possibleXPosition2 =
-      enemyView.position.x + enemyView.box.width + margin;
+      enemyView.position.x + enemyView.box.width / 2 + margin;
 
     const delta1 = Math.abs(possibleXPosition1 - fighterView.position.x);
     const delta2 = Math.abs(possibleXPosition2 - fighterView.position.x);
@@ -30,7 +30,8 @@ export const avoidStuckedFighter: Controller = (
   }
 
   /**
-   * This function will try to keep the angle between the fighter the same as before
+   * This function will try to keep the angle between the fighters the same as before.
+   * 
    */
 
   function defineNewYPosition(newXPosition: number) {

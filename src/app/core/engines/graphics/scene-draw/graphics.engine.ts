@@ -1,56 +1,65 @@
 import { View, GraphicalContext, GraphicalAPI } from "@app/models";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
-import { flipImage } from "app/utils/image-flipper/image-flipper";
+import { rotatePoint } from "app/utils/math/geometry";
+import { toBrowserCoordinates } from "app/utils/position";
 
 export class Graphics {
   private _api = inject(GraphicalAPI);
 
   drawCanvas(graphicalContext: GraphicalContext) {
     this._clearCanvas();
-    Object.values(graphicalContext).forEach((value) => {
-      this._drawObject(value);
-    });
+    this._drawComponentTree(graphicalContext);
   }
 
-  private _drawObject(figure: View) {
-    const position = this._translatePosition(
-      this._api.graphics,
-      figure.position.x,
-      figure.position.y,
-      figure.box.height
-    );
-    const loadedSprite = figure.sprite;
-    if (loadedSprite) {
-      this._showImage(loadedSprite as HTMLImageElement, figure, position);
-    }
+  private _drawComponentTree(graphicalContext: GraphicalContext) {
+    Object.values(graphicalContext).forEach((view) => {
+      const absolutePosition = view.position.absolute ?? view.position;
+      const spritePosition = toBrowserCoordinates(
+        absolutePosition,
+        view.box,
+        this._api.graphics
+      );
+
+      if (view.sprite) {
+        this._showImage(view.sprite, view.box, spritePosition);
+      }
+
+      if (view.components) {
+        this._drawComponentTree(view.components);
+      }
+    });
   }
 
   private _showImage(
     image: HTMLImageElement,
-    figure: View,
-    position: Position
+    box: View["box"],
+    position: View["position"]
   ) {
     const context = this._api.graphics;
 
     context.save();
+    const newReference = {
+      x: position.x + box.width / 2,
+      y: position.y + box.height,
+    };
+    context.translate(newReference.x, newReference.y);
+    context.rotate(position.angle);
 
-    if (figure.direction === "left") {
-      this._flipFigure(position, figure.box.width, context);
-    }
-
-    this._api.graphics.drawImage(
+    newReference.x = -box.width / 2;
+    newReference.y = -box.height;
+    context.drawImage(
       image,
-      position.x,
-      position.y,
-      figure.box.width,
-      figure.box.height
+      newReference.x,
+      newReference.y,
+      box.width,
+      box.height
     );
 
     context.restore();
   }
 
   private _flipFigure(
-    position: Position,
+    position: View["position"],
     figureWidth: number,
     context: CanvasRenderingContext2D
   ) {
@@ -63,22 +72,4 @@ export class Graphics {
     const { width, height } = this._api.graphics.canvas;
     this._api.graphics.clearRect(0, 0, width, height);
   }
-
-  /**
-   * Transform the canvas coordinate system into cartesian (so going up means increasing y coordinate ) with
-   * origin at bottom left of the window.
-   */
-  private _translatePosition(
-    graphics: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    height: number
-  ) {
-    return {
-      x,
-      y: graphics.canvas.height - y - height,
-    };
-  }
 }
-
-type Position = { x: number; y: number };

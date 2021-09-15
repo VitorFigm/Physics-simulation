@@ -1,9 +1,12 @@
 import { InjectableConstructor, Provider } from "@app/models";
 
-type Container = Map<
-  InjectableConstructor,
-  { instance?: unknown; Class: InjectableConstructor; injectMultiples: boolean }
->;
+type Container = Map<InjectableConstructor, Injection>;
+
+type Injection = {
+  instance?: unknown;
+  Class: InjectableConstructor;
+  injectMultiples?: boolean;
+};
 
 class InversionOfControl {
   static container: Container = new Map();
@@ -37,7 +40,7 @@ class InversionOfControl {
         const returnValue = () => provider.useValue;
         class Provider {
           constructor() {
-            return returnValue();
+            return returnValue() as Provider;
           }
         }
         setInjectableClass(provider.provide, Provider, false);
@@ -66,28 +69,32 @@ const getInjectableInstance = <T, P>(
   token: InjectableConstructor<T, P>,
   props?: P
 ) => {
-  const injection = InversionOfControl.container.get(token);
-  const isNotSingleton = injection.injectMultiples;
+  const injection = InversionOfControl.container.get(token) as Injection;
+  const isNotSingleton = Boolean(injection?.injectMultiples);
+
+  validateProps(injection.Class, props);
 
   if (isNotSingleton) {
-    return getInstance(injection.Class, props) as T;
+    return new injection.Class(props) as T;
   }
 
   if (!injection.instance) {
-    injection.instance = getInstance(injection.Class, props);
+    injection.instance = new injection.Class(props);
   }
 
   return injection.instance as T;
 };
 
-const getInstance = <T, P>(Class: InjectableConstructor<T, P>, props: P) => {
-  return props ? new Class(props) : new Class();
+const validateProps = (Class: Function, props?: any) => {
+  if (Class.length && !props) {
+    throw new Error(`Class ${Class.name} was injected without props`);
+  }
 };
 
 const setInjectableClass = (
   token: InjectableConstructor,
   injection: InjectableConstructor,
-  injectMultiples: boolean
+  injectMultiples?: boolean
 ) => {
   InversionOfControl.container.set(token, {
     Class: injection,

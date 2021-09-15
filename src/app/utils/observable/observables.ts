@@ -8,7 +8,7 @@ type Sieve<T> = (value: T) => boolean;
 
 type Callback<T> = (subscriber: Subscriber<T>) => void;
 
-export type UnsubscribeCallback = (subscriber: Subscriber<unknown>) => void;
+export type UnsubscribeCallback = (subscriber: Subscriber<any>) => void;
 
 /**
  * Those implementation is based in rxjs Observable implementation.
@@ -45,13 +45,13 @@ export class Observable<T> {
             subscriber.next(mapper(value));
           },
           error(error) {
-            subscriber.error(error);
+            subscriber.error?.(error);
           },
         };
 
         this.subscribe(subscriberMapper);
       },
-      () => this._unsubscribeCallback(subscriberMapper)
+      () => this._unsubscribeCallback?.(subscriberMapper)
     );
   }
 
@@ -71,14 +71,14 @@ export class Observable<T> {
             }
           },
           error(error) {
-            subscriber.error(error);
+            subscriber.error?.(error);
           },
         };
 
         this.subscribe(subscriberSieve);
       },
       () => {
-        this._unsubscribeCallback(subscriberSieve);
+        this._unsubscribeCallback?.(subscriberSieve);
       }
     );
   }
@@ -108,7 +108,7 @@ export class Observable<T> {
           concatMapper(value).subscribe(subscriber);
         },
         error(error) {
-          subscriber.error(error);
+          subscriber.error?.(error);
         },
       };
 
@@ -118,7 +118,7 @@ export class Observable<T> {
 }
 
 export class Subject<T> {
-  value: T;
+  value?: T;
 
   private _subscribers: Subscriber<T>[] = [];
 
@@ -144,6 +144,8 @@ export class Subject<T> {
 }
 
 export class BehaviorSubject<T> extends Subject<T> {
+  value: T;
+  
   constructor(private _initialValue: T) {
     super();
     this.value = this._initialValue;
