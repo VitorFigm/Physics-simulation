@@ -1,20 +1,25 @@
 import { ArmAction, ArmStateName, View } from "@app/models";
 import { State } from "app/controllers/states/model/state.model";
-import { Moving } from "app/controllers/states/moving/moving.state";
+import {
+  Moving,
+  MovingProps,
+} from "app/controllers/states/moving/moving.state";
 import { FiniteStateMachine } from "app/controllers/states/state-machine";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
 import { GRAVITY } from "app/services/next-frame/constants";
 import { calculatePendularMotion } from "app/utils/math/pendulum";
-import { FullArm } from "../../arm.controler";
+import { FullArm } from "../../arm.controller";
 
 interface FallingProps {
-  stateMachine: FiniteStateMachine;
+  stateMachine: FiniteStateMachine<ArmAction, ArmStateName>;
   armLength: number;
   armMass?: number;
+  friction?: number;
 }
 
 const DEFAULT_PROPS = {
   armMass: 1,
+  friction: 0.07,
 };
 
 export class Falling extends State<ArmAction, ArmStateName> {
@@ -22,35 +27,32 @@ export class Falling extends State<ArmAction, ArmStateName> {
   name: ArmStateName = "falling";
 
   private _movingFullArm: Moving;
-
   private _movingForeArm: Moving;
 
   constructor(_props: FallingProps) {
     super(_props.stateMachine);
-    this._props = { ..._props, ...DEFAULT_PROPS };
+    this._props = { ...DEFAULT_PROPS, ..._props };
 
+    const movingConfig: MovingProps = {
+      axis: "angle",
+      initialAcceleration: 0,
+      friction: this._props.friction,
+      stateMachine: this._props.stateMachine,
+    };
+
+    this._movingFullArm = inject(Moving, movingConfig);
+
+    this._movingForeArm = inject(Moving, movingConfig);
+  }
+
+  listenActions(): void {
     this.setTransition({ from: "controlling", on: "loose" });
   }
 
-  onInit(): void {
-    this._movingFullArm = inject(Moving, {
-      axis: "angle",
-      initialAcceleration: 0,
-      friction: 0.07,
-      shouldSetTransitions: false,
-      stateMachine: this._props.stateMachine,
-    });
-
-    this._movingForeArm = inject(Moving, {
-      axis: "angle",
-      initialAcceleration: 0,
-      friction: 0.07,
-      shouldSetTransitions: false,
-      stateMachine: this._props.stateMachine,
-    });
-  }
+  onInit(): void {}
 
   execute(fullArm: FullArm): void {
+    console.log(this._props.friction);
     this.acceleratePendulums(fullArm);
     const shoudlAccelerate = true;
 
