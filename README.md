@@ -1,15 +1,9 @@
-# 🚀 Welcome to your new awesome project!
+# WIP
 
-This project has been created using **webpack-cli**, you can now run
+[# Click here to see a demo](https://vitorfigm.github.io/fight_me_remake/)
 
-```
-npm run build
-```
 
-or
-
-```
-yarn build
-```
-
-to bundle your application
+### Todo
+- [ ] Implement projectile thrown system.
+- [ ] Implement Bot IA.
+- [ ] Implement Ground System (make fighters be able to jump and stay into high ground)
