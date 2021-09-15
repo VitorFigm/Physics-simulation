@@ -1,11 +1,11 @@
 export const assets = [
   {
     name: "box",
-    load: require("./box.svg"),
+    load: require("./box.png"),
   },
   {
     name: "blue-box",
-    load: require("./blue-box.svg"),
+    load: require("./blue-box.png"),
   },
 ] as const;
 
