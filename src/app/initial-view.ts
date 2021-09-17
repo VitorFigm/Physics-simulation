@@ -1,4 +1,4 @@
-import { FullArm } from "./controllers/arm/arm.controler";
+import { FullArm } from "./controllers/arm/arm.controller";
 import { Player } from "./controllers/player/player.controller";
 import { RenderizationAPI } from "./core/engines/graphics/graphical-api";
 import { inject } from "./core/inversion-of-control/inversion-of-control.engine";

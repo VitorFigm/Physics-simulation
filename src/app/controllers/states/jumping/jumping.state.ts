@@ -1,5 +1,6 @@
 import { FighterAction, FighterStateName, View } from "@app/models";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
+import { LEFT_DIRECTION, RIGHT_DIRECTION } from "app/services/next-frame/constants";
 import { State } from "../model/state.model";
 import { Moving } from "../moving/moving.state";
 import { FiniteStateMachine } from "../state-machine";
@@ -26,20 +27,20 @@ export class Jumping extends State<FighterAction, FighterStateName> {
     this._props = { ...this._props, ...DEFAULT_PROPS };
 
     this.movingX = inject(Moving, {
-      shouldSetTransitions: false,
       stateMachine: _props.stateMachine,
       axis: "x",
       initialAcceleration: 1,
     });
 
     this.movingY = inject(Moving, {
-      shouldSetTransitions: false,
       stateMachine: this._props.stateMachine,
       axis: "y",
       initialAcceleration: -GRAVITY,
       friction: 0.001,
     });
+  }
 
+  listenActions() {
     this.setTransition({
       on: "jump",
       from: "moving",
@@ -53,11 +54,11 @@ export class Jumping extends State<FighterAction, FighterStateName> {
     this.movingY.velocity = this._props.initialVelocity ?? 0;
 
     this.on("goLeft", () => {
-      this.movingX.accelerate("left");
+      this.movingX.accelerate(LEFT_DIRECTION);
     });
 
     this.on("goRight", () => {
-      this.movingX.accelerate("right");
+      this.movingX.accelerate(RIGHT_DIRECTION);
     });
   }
 

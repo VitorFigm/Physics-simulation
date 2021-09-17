@@ -4,7 +4,7 @@ import { FiniteStateMachine } from "./../states/state-machine";
 import { FighterAction, Point, View } from "@app/models";
 import { Standing } from "../states/stading.state";
 import { Moving } from "../states/moving/moving.state";
-import { controlArm, FullArm } from "../arm/arm.controler";
+import { controlArm, FullArm } from "../arm/arm.controller";
 import { MouseService } from "app/services/mouse/mouse.service";
 import { Jumping } from "../states/jumping/jumping.state";
 
@@ -29,11 +29,12 @@ export const controlPlayer = (view: Player) => {
     stateMachine = inject(FiniteStateMachine);
 
     view.stateMachine = stateMachine;
-    const initialState = inject(Standing, { stateMachine });
+    const initialState = inject(Standing, { stateMachine })
+    initialState.listenActions()
     stateMachine.setState(initialState);
-    inject(Moving, { stateMachine, initialAcceleration: 1, axis: "x" });
+    inject(Moving, { stateMachine, initialAcceleration: 1, axis: "x" }).listenActions()
 
-    inject(Jumping, { stateMachine });
+    inject(Jumping, { stateMachine }).listenActions();
 
     keyboardService = inject(KeyboardService);
     mouseService = inject(MouseService);
