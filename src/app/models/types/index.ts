@@ -6,10 +6,16 @@ export type Sprite = {
 
 export type ImageLoader = ReadonlyMap<string, Sprite>;
 
-type Postition = { x: number; y: number; angle: number };
+export type Position = { x: number; y: number; angle: number };
+
+export type Box = {
+  width: number;
+  height: number;
+};
+
 export interface View {
-  position: Postition & { absolute?: Postition };
-  box: { width: number; height: number; paddingX?: number; paddingY?: number };
+  position: Position & { absolute?: Position };
+  box: Box;
   stateMachine?: FiniteStateMachine;
   sprite?: HTMLImageElement;
   components?: GraphicalContext;

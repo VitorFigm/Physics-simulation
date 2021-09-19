@@ -1,5 +1,11 @@
 import { View } from "./models/types/index";
-import { GraphicalAPI, GraphicalContext, Provider } from "@app/models";
+import {
+  GraphicalAPI,
+  GraphicalContext,
+  GraphicalContextToken,
+  Position,
+  Provider,
+} from "@app/models";
 import { controlPlayer } from "./controllers/player/player.controller";
 import { RenderizationAPI } from "./core/engines/graphics/graphical-api";
 import { Graphics } from "./core/engines/graphics/scene-draw/graphics.engine";
@@ -14,9 +20,12 @@ import { stateProviders } from "./controllers/states/state-providers";
 import { NextFrameService } from "./services/next-frame/next-frame.service";
 import { CollisionService } from "./services/colision/colision.service";
 import { FightService } from "./services/fight/fight.service";
-import { PROCESS_FRAME_RATE } from "./services/next-frame/constants";
 import { MouseService } from "./services/mouse/mouse.service";
 import { setAbosolutePositon } from "./utils/position";
+import { controlEnemy } from "./controllers/enemy/enemy.controller";
+import { ParticleService } from "./services/particles/particles.service";
+import { Polygon } from "./utils/math/geometry/general-polygon/general-polygon";
+import { graphics } from "dom-canvas";
 
 /// providers
 {
@@ -29,6 +38,7 @@ import { setAbosolutePositon } from "./utils/position";
     Graphics,
     { provide: GraphicalAPI, useClass: RenderizationAPI },
     RenderizationAPI,
+    ParticleService,
   ];
 
   provide(coreProviders);
@@ -36,27 +46,26 @@ import { setAbosolutePositon } from "./utils/position";
 }
 
 const view = createInitialView();
+provide([{ provide: GraphicalContextToken, useValue: view }]);
+
+constructViewTree(view);
 /// controls
 {
   controlPlayer(view.player);
+  controlEnemy(view.enemy);
 }
 
 const nextFrameService = inject(NextFrameService);
 const graphicalEngine = inject(Graphics);
 
-// constructViewTree(view);
-
-nextFrameService.checkFramePass(PROCESS_FRAME_RATE).subscribe({
+nextFrameService.checkFramePass().subscribe({
   next: () => {
     constructViewTree(view);
   },
 });
 
-let counter = 0;
-
 nextFrameService.checkFramePass().subscribe({
   next: () => {
-    counter++;
     graphicalEngine.drawCanvas(view);
   },
 });

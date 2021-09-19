@@ -52,12 +52,11 @@ export class Falling extends State<ArmAction, ArmStateName> {
   onInit(): void {}
 
   execute(fullArm: FullArm): void {
-    console.log(this._props.friction);
     this.acceleratePendulums(fullArm);
     const shoudlAccelerate = true;
 
     this._movingFullArm.execute(fullArm, shoudlAccelerate);
-    this._movingForeArm.execute(fullArm.components.forearm, shoudlAccelerate);
+    this._movingForeArm.execute(fullArm.components.foreArm, shoudlAccelerate);
   }
 
   stop() {
@@ -79,7 +78,7 @@ export class Falling extends State<ArmAction, ArmStateName> {
 
     const foreArmPendulum = {
       ...commmon,
-      angle: fullArm.components.forearm.position.angle,
+      angle: fullArm.components.foreArm.position.angle,
       velocity: this._movingForeArm.velocity,
     };
 

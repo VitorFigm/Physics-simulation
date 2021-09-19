@@ -9,7 +9,7 @@ import { inject } from "app/core/inversion-of-control/inversion-of-control.engin
 import {
   calculateDistance,
   calculateRelativeCoordinate,
-} from "app/utils/math/geometry";
+} from "app/utils/math/geometry/points";
 import { FullArm } from "../../arm.controller";
 import { Falling } from "../falling/falling.state";
 
@@ -70,7 +70,7 @@ export class ControllingArm extends State<ArmAction, ArmStateName> {
   execute(arm: FullArm): void {
     const currentArmAngle = this._props.arm.position.angle;
     const currentForeArmAngle =
-      this._props.arm.components.forearm.position.angle;
+      this._props.arm.components.foreArm.position.angle;
 
     this._movingFullArm.velocity =
       this.getControlVelocity(currentArmAngle, this._armAngle as number) || 0;
@@ -84,20 +84,20 @@ export class ControllingArm extends State<ArmAction, ArmStateName> {
         this._foreArmAngle as number
       ) || 0;
 
-    this._movingForeArm.execute(arm.components.forearm, shoudlAccelerate);
+    this._movingForeArm.execute(arm.components.foreArm, shoudlAccelerate);
   }
 
   /**
-   * To make the angle converge to the derired angle, this function
+   * To make the angle converge to the derired angle over time, this function
    * do a optmization like the gradient decent algorithm of neural
    * networks but reversed. It will, overtime,
    * make the distance betwwen the current and the desired angle
    * converge to 0. Cos(0º) is the max point of cossine function, so if
-   * we make the angle walk in the direction of the derivative of cos(error)
-   * the error will converge to 0.
+   * we make the angle walk in the direction of the derivative
+   * of cos(error), which is -sin(error),the error will converge to 0.
    */
   getControlVelocity(currentAngle: number, desiredAngle: number) {
-    const rate = 0.2;
+    const rate = 0.3;
 
     return rate * -Math.sin(currentAngle - desiredAngle);
   }

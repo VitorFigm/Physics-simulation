@@ -1,11 +1,38 @@
-import { FullArm } from "./controllers/arm/arm.controller";
+import { ForeArm, FullArm } from "./controllers/arm/arm.controller";
 import { Player } from "./controllers/player/player.controller";
 import { RenderizationAPI } from "./core/engines/graphics/graphical-api";
 import { inject } from "./core/inversion-of-control/inversion-of-control.engine";
-import { View } from "./models";
+import { GraphicalContext, View } from "./models";
 
 export const createInitialView = () => {
   const api = inject(RenderizationAPI);
+
+  const foreArm: ForeArm = {
+    sprite: api.imageLoader.get("blue-box").image,
+    box: {
+      height: 75,
+      width: 25,
+    },
+    position: {
+      x: 0,
+      y: 75,
+      angle: Math.PI / 6,
+    },
+    components: {
+      hand: {
+        sprite: api.imageLoader.get("red-box").image,
+        box: {
+          height: 25,
+          width: 25,
+        },
+        position: {
+          x: 0,
+          y: 50,
+          angle: 0,
+        },
+      },
+    },
+  };
 
   const fullArm: FullArm = {
     box: {
@@ -30,18 +57,7 @@ export const createInitialView = () => {
           angle: 0,
         },
       },
-      forearm: {
-        sprite: api.imageLoader.get("blue-box").image,
-        box: {
-          height: 75,
-          width: 25,
-        },
-        position: {
-          x: 0,
-          y: 75,
-          angle: Math.PI / 6,
-        },
-      },
+      foreArm,
     },
   };
 
@@ -53,8 +69,8 @@ export const createInitialView = () => {
     },
 
     position: {
-      x: 200,
-      y: 0,
+      x: 100,
+      y: 10,
       angle: 0,
     },
     components: {
@@ -65,11 +81,24 @@ export const createInitialView = () => {
   const enemy: View = {
     sprite: api.imageLoader.get("box").image,
     box: {
-      height: 100,
+      height: 180,
       width: 30,
     },
     position: {
       x: 500,
+      y: 10,
+      angle: 0,
+    },
+  };
+
+  const ballBucket: View = {
+    sprite: api.imageLoader.get("box").image,
+    box: {
+      height: 50,
+      width: 200,
+    },
+    position: {
+      x: 0,
       y: 0,
       angle: 0,
     },
@@ -78,5 +107,6 @@ export const createInitialView = () => {
   return {
     player,
     enemy,
+    ballBucket,
   };
 };
