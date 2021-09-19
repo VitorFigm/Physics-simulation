@@ -100,12 +100,13 @@ export class Observable<T> {
    * one single observable.
    *
    */
-  concatMap<R>(concatMapper: Mapper<T, Observable<R>>) {
+  mergeMap<R>(mergeMapper: Mapper<T, Observable<R>>) {
     let subscriberMapper: Subscriber<T>;
     return new Observable<R>((subscriber) => {
       subscriberMapper = {
         next(value: T) {
-          concatMapper(value).subscribe(subscriber);
+          const innerObservable = mergeMapper(value);
+          innerObservable.subscribe(subscriber);
         },
         error(error) {
           subscriber.error?.(error);
@@ -145,7 +146,7 @@ export class Subject<T> {
 
 export class BehaviorSubject<T> extends Subject<T> {
   value: T;
-  
+
   constructor(private _initialValue: T) {
     super();
     this.value = this._initialValue;

@@ -9,15 +9,22 @@ import { Falling } from "./states/falling/falling.state";
 export interface FullArm extends View {
   components: {
     arm: View;
-    forearm: View;
+    foreArm: ForeArm;
   };
 }
 
-export const controlArm = (
-  arm: FullArm,
-  controlArm$: Observable<Point>,
-  looseArm$: Observable<boolean>
-) => {
+export interface ForeArm extends View {
+  components: {
+    hand: View;
+  };
+}
+
+type Controls = {
+  controlArm$: Observable<Point>;
+  looseArm$: Observable<boolean>;
+};
+
+export const controlArm = (arm: FullArm, controls: Controls) => {
   let stateMachine: FiniteStateMachine<ArmAction>;
   let mouseService: MouseService;
   onInit();
@@ -43,13 +50,13 @@ export const controlArm = (
   }
 
   function controlArm() {
-    controlArm$.subscribe({
+    controls.controlArm$.subscribe({
       next: (mousePosition) => {
         stateMachine.emit("control", { mousePosition });
       },
     });
 
-    looseArm$.subscribe({
+    controls.looseArm$.subscribe({
       next: () => {
         stateMachine.emit("loose");
       },

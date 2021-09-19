@@ -2,9 +2,10 @@ import { InjectableConstructor, Provider } from "@app/models";
 
 type Container = Map<InjectableConstructor, Injection>;
 
-type Injection = {
-  instance?: unknown;
-  Class: InjectableConstructor;
+type Injection<T = any, P = any> = {
+  instance?: T;
+  Class: InjectableConstructor<T, P>;
+  defaultProps?: P;
   injectMultiples?: boolean;
 };
 

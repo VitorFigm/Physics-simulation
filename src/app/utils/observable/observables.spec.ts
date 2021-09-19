@@ -27,11 +27,11 @@ describe("Observable", () => {
     });
   });
 
-  describe("concatMap", () => {
+  describe("mergeMap", () => {
     it("should flat high order observables", () => {
       const valueToMap = 0;
 
-      const maped$ = observable$.concatMap((value) => of(valueToMap));
+      const maped$ = observable$.mergeMap((value) => of(valueToMap));
 
       maped$.subscribe({
         next(value) {
