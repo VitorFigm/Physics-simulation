@@ -7,8 +7,11 @@ This Project will be a physics game made without any libs (development dependenc
 Use **W, A, S, D** to move and **hold mouse click to control the arm**. 
 
 ### Todo
-- [X] Imlement player control
-- [X] Imlement arm physics
+- [X] Create inversion of control system
+- [X] Create own implementation of rxjs
+- [X] Implement Finite State Machine pattern
+- [X] Implement player control
+- [X] Implement arm physics
 - [X] Implement arm control system on click
 - [X] Implement polygonal colision system
 - [ ] Implement projectile thrown system.
