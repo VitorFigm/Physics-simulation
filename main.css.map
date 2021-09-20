@@ -1,0 +1,1 @@
+{"version":3,"file":"main.css","sources":["webpack://my-webpack-project/./src/style.scss"],"sourcesContent":["html,\r\nbody {\r\n  width: 100%;\r\n  height: 100%;\r\n  margin: 0;\r\n  overflow: hidden;\r\n  cursor: url(\"./assets/cursor.svg\"), crosshair;\r\n}\r\n"],"mappings":"AAAA;","sourceRoot":""}
