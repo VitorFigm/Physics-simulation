@@ -1,33 +1,46 @@
-import { ArmAction, ArmStateName, Point, View } from "@app/models";
+import { Point, View } from "@app/models";
 import { Observable } from "@app/utils";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
+import { CollisionService } from "app/services/collision/collision.service";
 import { MouseService } from "app/services/mouse/mouse.service";
-import { FiniteStateMachine } from "../states/state-machine";
+import { ActionEmitter, FiniteStateMachine } from "../states/state-machine";
 import { ControllingArm } from "./states/controlling/controlling-arm";
 import { Falling } from "./states/falling/falling.state";
+import { ThrowingBall } from "./states/throwing-ball/throwing-ball";
 
 export interface FullArm extends View {
   components: {
     arm: View;
-    forearm: View;
+    foreArm: ForeArm;
   };
 }
 
-export const controlArm = (
-  arm: FullArm,
-  controlArm$: Observable<Point>,
-  looseArm$: Observable<boolean>
-) => {
-  let stateMachine: FiniteStateMachine<ArmAction>;
+export interface ForeArm extends View {
+  components: {
+    hand: View;
+  };
+}
+
+type Controls = {
+  controlArm$: Observable<Point>;
+  looseArm$: Observable<boolean>;
+};
+
+export const controlArm = (arm: FullArm, controls: Controls) => {
+  const { hand } = arm.components.foreArm.components;
+  let stateMachine: FiniteStateMachine;
   let mouseService: MouseService;
+
   onInit();
   controlArm();
+  listenBallCatch();
 
   function onInit() {
     const armLength = arm.box.height;
 
     stateMachine = inject(FiniteStateMachine);
-    arm.stateMachine = stateMachine;
+    arm.actionEmitter = stateMachine;
+    hand.actionEmitter = inject(ActionEmitter);
 
     const initialState = inject(Falling, {
       stateMachine,
@@ -38,21 +51,36 @@ export const controlArm = (
     stateMachine.setState(initialState);
 
     inject(ControllingArm, { stateMachine, arm }).listenActions();
+    inject(ThrowingBall, { stateMachine, arm }).listenActions();
 
     mouseService = inject(MouseService);
+
+    inject(CollisionService).observeCollision(hand);
   }
 
   function controlArm() {
-    controlArm$.subscribe({
+    controls.controlArm$.subscribe({
       next: (mousePosition) => {
-        stateMachine.emit("control", { mousePosition });
+        stateMachine.emit("control", { desiredPosition: mousePosition });
       },
     });
 
-    looseArm$.subscribe({
+    controls.looseArm$.subscribe({
       next: () => {
         stateMachine.emit("loose");
       },
     });
+  }
+
+  function listenBallCatch() {
+    hand.actionEmitter?.action$
+      .filter((emission) => {
+        return emission.action === "catchBall";
+      })
+      .subscribe({
+        next: (emission) => {
+          stateMachine.emit("catchBall", emission.data);
+        },
+      });
   }
 };

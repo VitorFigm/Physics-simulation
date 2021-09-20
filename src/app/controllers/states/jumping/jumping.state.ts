@@ -1,6 +1,9 @@
-import { FighterAction, FighterStateName, View } from "@app/models";
+import { View } from "@app/models";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
-import { LEFT_DIRECTION, RIGHT_DIRECTION } from "app/services/next-frame/constants";
+import {
+  LEFT_DIRECTION,
+  RIGHT_DIRECTION,
+} from "app/services/next-frame/constants";
 import { State } from "../model/state.model";
 import { Moving } from "../moving/moving.state";
 import { FiniteStateMachine } from "../state-machine";
@@ -8,7 +11,7 @@ import { FiniteStateMachine } from "../state-machine";
 const GRAVITY = 1.6;
 
 interface JumpingProps {
-  stateMachine: FiniteStateMachine<FighterAction, FighterStateName>;
+  stateMachine: FiniteStateMachine;
   initialVelocity?: number;
 }
 
@@ -16,8 +19,8 @@ const DEFAULT_PROPS = {
   initialVelocity: 30,
 };
 
-export class Jumping extends State<FighterAction, FighterStateName> {
-  name: FighterStateName = "jumping";
+export class Jumping extends State {
+  name = "jumping";
   movingY: Moving;
   movingX: Moving;
 

@@ -1,6 +1,5 @@
 import { View, GraphicalContext, GraphicalAPI } from "@app/models";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
-import { rotatePoint } from "app/utils/math/geometry";
 import { toBrowserCoordinates } from "app/utils/position";
 
 export class Graphics {

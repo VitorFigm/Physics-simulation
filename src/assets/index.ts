@@ -4,8 +4,16 @@ export const assets = [
     load: require("./box.png"),
   },
   {
+    name: "ball",
+    load: require("./ball.png"),
+  },
+  {
     name: "blue-box",
     load: require("./blue-box.png"),
+  },
+  {
+    name: "red-box",
+    load: require("./red-box.png"),
   },
 ] as const;
 

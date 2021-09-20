@@ -1,5 +1,5 @@
-import { GraphicalContext, Point, View } from "@app/models";
-import { rotatePoint } from "./math/geometry";
+import { Point, Position, View } from "@app/models";
+import { rotateAround, rotatePoint } from "./math/geometry/points";
 
 export const setAbosolutePositon = (
   view: View,
@@ -42,4 +42,51 @@ export const toCartesianCoordinates = (position: Point) => {
     x: position.x,
     y: window.innerHeight - position.y,
   };
+};
+
+/**
+ * Get coordinates of the bottom left and the top right points of the view's box
+ */
+export const getViewBoxCoordinates = (view: View) => {
+  const middleBottomPoint = view.position.absolute as Position;
+
+  const angle = view.position.absolute?.angle as number;
+
+  const bottomLeft = rotateAround(
+    middleBottomPoint,
+    {
+      x: middleBottomPoint.x - view.box.width / 2,
+      y: middleBottomPoint.y,
+    },
+    angle
+  );
+
+  const topLeft = rotateAround(
+    middleBottomPoint,
+    {
+      x: middleBottomPoint.x - view.box.width / 2,
+      y: middleBottomPoint.y + view.box.height,
+    },
+    angle
+  );
+
+  const topRight = rotateAround(
+    middleBottomPoint,
+    {
+      x: middleBottomPoint.x + view.box.width / 2,
+      y: middleBottomPoint.y + view.box.height,
+    },
+    angle
+  );
+
+  const bottomRight = rotateAround(
+    middleBottomPoint,
+    {
+      x: middleBottomPoint.x + view.box.width / 2,
+      y: middleBottomPoint.y,
+    },
+    angle
+  );
+
+  return { bottomLeft, topLeft, topRight, bottomRight };
 };

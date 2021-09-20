@@ -7,33 +7,37 @@ type Emission<T> = {
   data?: Record<string, unknown>;
 };
 
-export class FiniteStateMachine<Action = any, StateName = any> {
-  private _action$ = new Subject<Emission<Action>>();
-  private _state: State<Action, StateName>;
+interface ActionState extends Partial<State> {
+  execute(view: View): void;
+}
+
+export class ActionEmitter {
+  private _action$ = new Subject<Emission<string>>();
+  action$ = this._action$.toObservable();
+
+  emit(action: string, data?: Record<string, any>) {
+    this._action$.next({ action, data });
+  }
+}
+
+export class FiniteStateMachine extends ActionEmitter {
+  private _state: ActionState;
 
   get currentState() {
     return this._state;
   }
 
-  constructor() {}
-
-  action$ = this._action$.toObservable();
-
-  setState<T extends string>(state: State<Action, T>, data?: unknown) {
-    this._state?.clearSubscriptions();
-    this._state = state as any;
-    this._state.onInit(data);
+  setState(state: ActionState, data?: unknown) {
+    this._state?.clearSubscriptions?.();
+    this._state = state;
+    this._state.onInit?.(data);
   }
 
   executeRoutine(view: View) {
     this._state.execute(view);
   }
 
-  emit(action: Action, data?: any) {
-    this._action$.next({ action, data });
-  }
-
   getCurrentStateName() {
-    return this._state?.name as StateName;
+    return this._state?.name;
   }
 }

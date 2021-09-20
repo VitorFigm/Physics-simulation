@@ -34,7 +34,7 @@ describe("Graphics", () => {
         },
         position: { x: square.width / 2, y: 0, angle: 0 },
         sprite: square,
-        stateMachine: {} as any,
+        actionEmitter: {} as any,
       },
     };
 

@@ -1,7 +1,8 @@
-import { Point } from "@app/models";
+import { Point, Position, View } from "@app/models";
 
 /**
- * rotate a point using the [rotation matrix](https://cadbooster.com/wp-content/uploads/2019/08/044-12-rotation-matrix-2D-1.png)
+ * rotate a point arroud the origin
+ * using the [rotation matrix](https://cadbooster.com/wp-content/uploads/2019/08/044-12-rotation-matrix-2D-1.png)
  */
 export const rotatePoint = (point: Point, angle: number) => {
   return {
@@ -30,3 +31,17 @@ export const calculateRelativeCoordinate = (
   x: point1.x - relativeTo.x,
   y: point1.y - relativeTo.y,
 });
+
+/**
+ * Rotate a point around other point
+ */
+
+export const rotateAround = (around: Point, point: Point, angle: number) => {
+  let rotatedPoint = calculateRelativeCoordinate(point, around);
+  rotatedPoint = rotatePoint(rotatedPoint, angle);
+
+  rotatedPoint.x += around.x;
+  rotatedPoint.y += around.y;
+
+  return rotatedPoint;
+};

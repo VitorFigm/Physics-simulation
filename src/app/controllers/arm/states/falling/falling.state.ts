@@ -1,4 +1,4 @@
-import { ArmAction, ArmStateName, View } from "@app/models";
+import { View } from "@app/models";
 import { State } from "app/controllers/states/model/state.model";
 import {
   Moving,
@@ -11,7 +11,7 @@ import { calculatePendularMotion } from "app/utils/math/pendulum";
 import { FullArm } from "../../arm.controller";
 
 interface FallingProps {
-  stateMachine: FiniteStateMachine<ArmAction, ArmStateName>;
+  stateMachine: FiniteStateMachine;
   armLength: number;
   armMass?: number;
   friction?: number;
@@ -22,9 +22,9 @@ const DEFAULT_PROPS = {
   friction: 0.07,
 };
 
-export class Falling extends State<ArmAction, ArmStateName> {
+export class Falling extends State {
   private _props: Required<FallingProps>;
-  name: ArmStateName = "falling";
+  name = "falling";
 
   private _movingFullArm: Moving;
   private _movingForeArm: Moving;
@@ -47,17 +47,17 @@ export class Falling extends State<ArmAction, ArmStateName> {
 
   listenActions(): void {
     this.setTransition({ from: "controlling", on: "loose" });
+    this.setTransition({ from: "throwing", on: "loose" });
   }
 
   onInit(): void {}
 
   execute(fullArm: FullArm): void {
-    console.log(this._props.friction);
     this.acceleratePendulums(fullArm);
     const shoudlAccelerate = true;
 
     this._movingFullArm.execute(fullArm, shoudlAccelerate);
-    this._movingForeArm.execute(fullArm.components.forearm, shoudlAccelerate);
+    this._movingForeArm.execute(fullArm.components.foreArm, shoudlAccelerate);
   }
 
   stop() {
@@ -79,7 +79,7 @@ export class Falling extends State<ArmAction, ArmStateName> {
 
     const foreArmPendulum = {
       ...commmon,
-      angle: fullArm.components.forearm.position.angle,
+      angle: fullArm.components.foreArm.position.angle,
       velocity: this._movingForeArm.velocity,
     };
 
