@@ -2,7 +2,7 @@
 // import { Observable, of } from "@app/utils";
 // import { provide } from "app/core/inversion-of-control/inversion-of-control.engine";
 // import { NextFrameService } from "../next-frame/next-frame.service";
-// import { CollisionService } from "./colision.service";
+// import { CollisionService } from "./collision.service";
 
 // describe("CollisionService", () => {
 //   let collisionService: CollisionService;

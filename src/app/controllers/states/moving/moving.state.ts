@@ -1,4 +1,4 @@
-import { FighterAction, FighterStateName, View } from "@app/models";
+import { View } from "@app/models";
 import {
   LEFT_DIRECTION,
   RIGHT_DIRECTION,
@@ -21,8 +21,8 @@ const DEFAULT_PROPS = {
   initialAcceleration: 0,
 };
 
-export class Moving extends State<FighterAction, FighterStateName> {
-  name: FighterStateName = "moving";
+export class Moving extends State {
+  name = "moving";
   velocity: number = 0;
   acceleration: number;
   private _props: Required<MovingProps>;

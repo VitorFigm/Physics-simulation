@@ -8,29 +8,32 @@ import {
 import { RenderizationAPI } from "app/core/engines/graphics/graphical-api";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
 
+type ParticleController = {
+  removeParticle: () => void;
+};
+
 export class ParticleService {
   private _renderer = inject(RenderizationAPI);
   private _graphicalContext = inject(GraphicalContextToken) as GraphicalContext;
   private _idIterator = this._generateId();
-  get id() {
+  private get _id() {
     return this._idIterator.next().value;
   }
 
   constructor() {}
 
-  createDot(at: Point) {
-    const dot: View = {
-      sprite: this._renderer.imageLoader.get("red-box").image,
-      box: {
-        height: 10,
-        width: 10,
-      },
-      position: { ...at, angle: 0 },
-    };
-    const a = `dot` + this.id;
-    console.log(a);
+  renderParticle(particle: View) {
+    const particleId = `particle ${this._id}`;
 
-    this._graphicalContext[a] = dot;
+    this._graphicalContext[particleId] = particle;
+
+    const controller: ParticleController = {
+      removeParticle: () => {
+        delete this._graphicalContext[particleId];
+      },
+    };
+
+    return controller;
   }
 
   private *_generateId() {
