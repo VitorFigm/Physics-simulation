@@ -7,6 +7,10 @@ This Project will be a physics game made without any libs (development dependenc
 Use **W, A, S, D** to move and **hold mouse click to control the arm**. 
 
 ### Todo
+- [X] Imlement player control
+- [X] Imlement arm physics
+- [X] Implement arm control system on click
+- [X] Implement polygonal colision system
 - [ ] Implement projectile thrown system.
 - [ ] Implement Bot IA.
 - [ ] Implement Ground System (make fighters be able to jump and stay into the high ground)
