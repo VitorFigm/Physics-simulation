@@ -1,4 +1,4 @@
-import { FighterAction, FighterStateName, View } from "@app/models";
+import { View } from "@app/models";
 import { State } from "./model/state.model";
 import { FiniteStateMachine } from "./state-machine";
 
@@ -6,12 +6,12 @@ interface StadingProps {
   stateMachine: FiniteStateMachine;
 }
 
-export class Standing extends State<FighterAction, FighterStateName> {
-  name: FighterStateName = "standing";
+export class Standing extends State {
+  name = "standing";
   constructor(props: StadingProps) {
     super(props.stateMachine);
   }
-  onInit() { }
-  listenActions() { }
-  execute(view: View) { }
+  onInit() {}
+  listenActions() {}
+  execute(view: View) {}
 }

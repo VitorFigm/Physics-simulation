@@ -1,8 +1,7 @@
 import { Point, View } from "@app/models";
-import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
-import { ParticleService } from "app/services/particles/particles.service";
 import { getViewBoxCoordinates } from "app/utils/position";
-import { LineSegment } from "../line";
+import { getMeanOf } from "../../simple-calculations";
+import { calculateDistance } from "../points";
 import { Triangle } from "../triangle/triangle";
 
 export class Polygon {
@@ -18,14 +17,27 @@ export class Polygon {
       points.bottomRight,
     ]);
   }
+  /**
+   * Compare two polygons and get the one that has the highest mean distance from barycenter to vertexes
+   */
+  static compare(polygon1: Polygon, polygon2: Polygon) {
+    const meanDistance1 = getMeanOf(...polygon1.getAllRadius());
+    const meanDistance2 = getMeanOf(...polygon2.getAllRadius());
+
+    const bigger = meanDistance1 > meanDistance2 ? polygon1 : polygon2;
+    const smaller = meanDistance1 < meanDistance2 ? polygon1 : polygon2;
+
+    return { bigger, smaller };
+  }
 
   /**
    * Check if two Polygons intersects taking triangles from consecutive vertexes of one polygon
    * and testing if any point of the other is inside those triangles
    */
   intersects(polygonToTest: Polygon) {
-    for (const triangle of this.getTrianglesFromVertexes()) {
-      for (const point of polygonToTest.points) {
+    const polygons = Polygon.compare(this, polygonToTest);
+    for (const triangle of polygons.bigger.getTrianglesFromVertexes()) {
+      for (const point of polygons.smaller.points) {
         if (triangle.contains(point)) {
           return true;
         }
@@ -68,6 +80,15 @@ export class Polygon {
     );
   }
 
+  /**
+   * Returns all distances between the barycenter to a vertex
+   */
+  getAllRadius() {
+    const barycenter = this.getBarycenter();
+    return this.points.map((point) => {
+      return calculateDistance(barycenter, point);
+    });
+  }
   /**
    * Checks if at least one of the edge of two polygons intesects
    */

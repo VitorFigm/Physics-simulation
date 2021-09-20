@@ -1,4 +1,4 @@
-import { FiniteStateMachine } from "app/controllers/states/state-machine";
+import { ActionEmitter } from "app/controllers/states/state-machine";
 
 export type Sprite = {
   image: HTMLImageElement;
@@ -16,7 +16,7 @@ export type Box = {
 export interface View {
   position: Position & { absolute?: Position };
   box: Box;
-  stateMachine?: FiniteStateMachine;
+  actionEmitter?: ActionEmitter;
   sprite?: HTMLImageElement;
   components?: GraphicalContext;
 }
@@ -48,7 +48,7 @@ export type Provider<T = unknown, P = unknown> =
       //*
       /* Set it to true if you don't want the class being singletons
        */
-      injectMultiples?: boolean;
+      multiplesInstances?: boolean;
     }
   | {
       provide: InjectableConstructor<T, P>;
@@ -58,16 +58,5 @@ export type Provider<T = unknown, P = unknown> =
        */
     }
   | InjectableConstructor;
-
-export type FighterAction =
-  | "goLeft"
-  | "goRight"
-  | "jump"
-  | "endJump"
-  | "attack";
-export type FighterStateName = "standing" | "moving" | "falling" | "jumping";
-
-export type ArmAction = "control" | "loose";
-export type ArmStateName = "falling" | "controlling";
 
 export type Point = { x: number; y: number };

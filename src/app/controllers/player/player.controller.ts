@@ -1,14 +1,14 @@
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
 import { KeyboardService } from "./../../services/keyboard/keyboard.service";
 import { FiniteStateMachine } from "./../states/state-machine";
-import { FighterAction, Point, View } from "@app/models";
+import { Point, View } from "@app/models";
 import { Standing } from "../states/stading.state";
 import { Moving } from "../states/moving/moving.state";
 import { controlArm, FullArm } from "../arm/arm.controller";
 import { MouseService } from "app/services/mouse/mouse.service";
 import { Jumping } from "../states/jumping/jumping.state";
 import { Observable } from "@app/utils";
-import { CollisionService } from "app/services/colision/colision.service";
+import { CollisionService } from "app/services/collision/collision.service";
 
 export interface Player extends View {
   components: {
@@ -17,7 +17,7 @@ export interface Player extends View {
 }
 
 export const controlPlayer = (player: Player) => {
-  let stateMachine: FiniteStateMachine<FighterAction>;
+  let stateMachine: FiniteStateMachine;
   let keyboardService: KeyboardService;
   let mouseService = inject(MouseService);
   let collision$: Observable<View>;
@@ -27,13 +27,13 @@ export const controlPlayer = (player: Player) => {
   defineKeyActions();
   defineArmControl();
   observeMouseMove();
-  handleColision();
+  handlecollision();
 
   function onInit() {
     stateMachine = inject(FiniteStateMachine);
     collision$ = inject(CollisionService).observeCollision(player);
 
-    player.stateMachine = stateMachine;
+    player.actionEmitter = stateMachine;
     const initialState = inject(Standing, { stateMachine });
     initialState.listenActions();
     stateMachine.setState(initialState);
@@ -89,11 +89,9 @@ export const controlPlayer = (player: Player) => {
     controlArm(player.components.fullArm, controls);
   }
 
-  function handleColision() {
+  function handlecollision() {
     collision$.subscribe({
-      next: () => {
-        console.log("test");
-      },
+      next: (view) => {},
     });
   }
 };

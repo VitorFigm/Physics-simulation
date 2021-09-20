@@ -1,4 +1,4 @@
-import { ArmAction, ArmStateName, Point, View } from "@app/models";
+import { Point } from "@app/models";
 import { State } from "app/controllers/states/model/state.model";
 import {
   Moving,
@@ -14,14 +14,14 @@ import { FullArm } from "../../arm.controller";
 import { Falling } from "../falling/falling.state";
 
 interface ControllingArmProps {
-  stateMachine: FiniteStateMachine<ArmAction>;
+  stateMachine: FiniteStateMachine;
   arm: FullArm;
 }
 
-type MousePayload = { mousePosition?: Point };
+type MousePayload = { desiredPosition?: Point };
 
-export class ControllingArm extends State<ArmAction, ArmStateName> {
-  name: ArmStateName = "controlling";
+export class ControllingArm extends State {
+  name = "controlling";
 
   private _movingFullArm: Moving;
   private _movingForeArm: Moving;
@@ -30,7 +30,7 @@ export class ControllingArm extends State<ArmAction, ArmStateName> {
 
   private _armAngle?: number;
   private _foreArmAngle?: number;
-  private _mousePosition?: Point;
+  private _desiredPosition?: Point;
 
   constructor(private _props: ControllingArmProps) {
     super(_props.stateMachine);
@@ -57,7 +57,7 @@ export class ControllingArm extends State<ArmAction, ArmStateName> {
 
   onInit(): void {
     this.on("control", (data?: MousePayload) => {
-      this._mousePosition = data?.mousePosition;
+      this._desiredPosition = data?.desiredPosition;
 
       this._foreArmAngle = this._calculateForeArmAngle(this._props.arm);
       this._armAngle = this._calculateArmAngle(
@@ -73,13 +73,13 @@ export class ControllingArm extends State<ArmAction, ArmStateName> {
       this._props.arm.components.foreArm.position.angle;
 
     this._movingFullArm.velocity =
-      this.getControlVelocity(currentArmAngle, this._armAngle as number) || 0;
+      this._getControlVelocity(currentArmAngle, this._armAngle as number) || 0;
 
     const shoudlAccelerate = true;
     this._movingFullArm.execute(arm);
 
     this._movingForeArm.velocity =
-      this.getControlVelocity(
+      this._getControlVelocity(
         currentForeArmAngle,
         this._foreArmAngle as number
       ) || 0;
@@ -87,28 +87,35 @@ export class ControllingArm extends State<ArmAction, ArmStateName> {
     this._movingForeArm.execute(arm.components.foreArm, shoudlAccelerate);
   }
 
+  getAngularVelocities() {
+    return {
+      foreArmVelocity: this._movingForeArm.velocity,
+      armVelocity: this._movingFullArm.velocity,
+    };
+  }
+
   /**
-   * To make the angle converge to the derired angle over time, this function
-   * do a optmization like the gradient decent algorithm of neural
+   * To make the angle converge to the desired angle over time, this function
+   * do a optimization like the gradient decent algorithm of neural
    * networks but reversed. It will, overtime,
-   * make the distance betwwen the current and the desired angle
-   * converge to 0. Cos(0º) is the max point of cossine function, so if
+   * make the distance between the current and the desired angle
+   * converge to 0. Cos(0º) is the max point of cosine function, so if
    * we make the angle walk in the direction of the derivative
    * of cos(error), which is -sin(error),the error will converge to 0.
    */
-  getControlVelocity(currentAngle: number, desiredAngle: number) {
+  private _getControlVelocity(currentAngle: number, desiredAngle: number) {
     const rate = 0.3;
 
     return rate * -Math.sin(currentAngle - desiredAngle);
   }
 
   private _calculateForeArmAngle(arm: FullArm) {
-    if (!arm.position.absolute || !this._mousePosition) {
+    if (!arm.position.absolute || !this._desiredPosition) {
       return;
     }
 
     let pointerDistance = calculateDistance(
-      this._mousePosition,
+      this._desiredPosition,
       arm.position.absolute
     );
 
@@ -122,8 +129,11 @@ export class ControllingArm extends State<ArmAction, ArmStateName> {
 
   private _calculateArmAngle(arm: FullArm, foreArmAngle: number) {
     const abssolutePosition = arm.position.absolute as Point;
-    const mousePosition = this._mousePosition as Point;
-    const delta = calculateRelativeCoordinate(mousePosition, abssolutePosition);
+    const desiredPosition = this._desiredPosition as Point;
+    const delta = calculateRelativeCoordinate(
+      desiredPosition,
+      abssolutePosition
+    );
 
     // prevents angle equals 0, because it can make the atan blow to infinity
     delta.x = delta.x || 0.01;
@@ -142,5 +152,19 @@ export class ControllingArm extends State<ArmAction, ArmStateName> {
       : delta.x > 0
       ? angleTridQuadrant
       : angleForthQuadrant;
+  }
+
+  /**
+   * Fore arm and arm needs to be of the same size
+   */
+  private checkArmLength() {
+    const arm = this._props.arm.components.arm;
+    const foreArm = this._props.arm.components.foreArm;
+
+    if (arm.box.height !== foreArm.box.height) {
+      throw new Error(
+        "Arm and forearm height needs to be the same for proper work of the control"
+      );
+    }
   }
 }

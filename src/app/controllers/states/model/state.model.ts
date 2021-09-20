@@ -1,25 +1,21 @@
 import { Subscription, View } from "@app/models";
 import { FiniteStateMachine } from "../state-machine";
 
-type TransitionOptions<
-  DataType = Record<string, unknown>,
-  Action = string,
-  StateName = string
-  > = {
-    from: StateName;
-    on: Action;
-    do?: (previousState: any) => DataType | void;
-  };
+type TransitionOptions<DataType = Record<string, unknown>> = {
+  from: string;
+  on: string;
+  do?: (previousState: any) => DataType | void;
+};
 
-export abstract class State<Action, StateName> {
-  abstract name: StateName;
+export abstract class State {
+  abstract name: string;
 
   private _subscriptions: Subscription[] = [];
-  constructor(private stateMachine: FiniteStateMachine<Action, StateName>) { }
+  constructor(private stateMachine: FiniteStateMachine) {}
 
-  abstract onInit(data: unknown): void;
+  abstract onInit?(data: unknown): void;
   abstract execute(view: View): void;
-  abstract listenActions(): void
+  abstract listenActions(): void;
 
   clearSubscriptions() {
     this._subscriptions.forEach((subscription) => {
@@ -27,7 +23,7 @@ export abstract class State<Action, StateName> {
     });
   }
 
-  on = (action: Action, callback: (data?: Record<string, any>) => void) => {
+  on = (action: string, callback: (data?: Record<string, any>) => void) => {
     const subscription = this._filterEmittedActions(action).subscribe({
       next: ({ data }) => {
         callback(data);
@@ -51,14 +47,11 @@ export abstract class State<Action, StateName> {
    * argument to the onInit function of the State object implementing this transition. The previousState
    * will be passed as argument of the callback
    */
-  setTransition = <D>(options: TransitionOptions<D, Action, StateName>) => {
-    this._filterEmittedActions(options.on as Action).subscribe({
+  setTransition = <D>(options: TransitionOptions<D>) => {
+    this._filterEmittedActions(options.on).subscribe({
       next: ({ data }) => {
-        if (
-          (this.stateMachine.getCurrentStateName() as StateName) ===
-          options.from
-        ) {
-          this.stateMachine.setState(this as any, {
+        if (this.stateMachine.getCurrentStateName() === options.from) {
+          this.stateMachine.setState(this, {
             ...options.do?.(this.stateMachine.currentState),
             ...data,
           });
@@ -67,9 +60,9 @@ export abstract class State<Action, StateName> {
     });
   };
 
-  private _filterEmittedActions(action: Action) {
+  private _filterEmittedActions(action: string) {
     return this.stateMachine.action$.filter((emittedAction) => {
-      return (emittedAction.action as Action) === action;
+      return emittedAction.action === action;
     });
   }
 }

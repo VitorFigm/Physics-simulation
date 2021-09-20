@@ -6,7 +6,7 @@ type Injection<T = any, P = any> = {
   instance?: T;
   Class: InjectableConstructor<T, P>;
   defaultProps?: P;
-  injectMultiples?: boolean;
+  multiplesInstances?: boolean;
 };
 
 class InversionOfControl {
@@ -49,7 +49,7 @@ class InversionOfControl {
       }
 
       const { provide, useClass } = provider;
-      setInjectableClass(provide, useClass, provider.injectMultiples);
+      setInjectableClass(provide, useClass, provider.multiplesInstances);
     });
   }
 }
@@ -71,7 +71,7 @@ const getInjectableInstance = <T, P>(
   props?: P
 ) => {
   const injection = InversionOfControl.container.get(token) as Injection;
-  const isNotSingleton = Boolean(injection?.injectMultiples);
+  const isNotSingleton = Boolean(injection?.multiplesInstances);
 
   validateProps(injection.Class, props);
 
@@ -95,11 +95,11 @@ const validateProps = (Class: Function, props?: any) => {
 const setInjectableClass = (
   token: InjectableConstructor,
   injection: InjectableConstructor,
-  injectMultiples?: boolean
+  multiplesInstances?: boolean
 ) => {
   InversionOfControl.container.set(token, {
     Class: injection,
-    injectMultiples,
+    multiplesInstances,
   });
 };
 

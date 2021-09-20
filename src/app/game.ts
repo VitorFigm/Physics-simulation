@@ -18,7 +18,7 @@ import { KeyboardService } from "./services/keyboard/keyboard.service";
 
 import { stateProviders } from "./controllers/states/state-providers";
 import { NextFrameService } from "./services/next-frame/next-frame.service";
-import { CollisionService } from "./services/colision/colision.service";
+import { CollisionService } from "./services/collision/collision.service";
 import { FightService } from "./services/fight/fight.service";
 import { MouseService } from "./services/mouse/mouse.service";
 import { setAbosolutePositon } from "./utils/position";
@@ -26,6 +26,8 @@ import { controlEnemy } from "./controllers/enemy/enemy.controller";
 import { ParticleService } from "./services/particles/particles.service";
 import { Polygon } from "./utils/math/geometry/general-polygon/general-polygon";
 import { graphics } from "dom-canvas";
+import { controlBallBucket } from "./controllers/ball-bucket/ball-bucket.controller";
+import { FiniteStateMachine } from "./controllers/states/state-machine";
 
 /// providers
 {
@@ -53,6 +55,7 @@ constructViewTree(view);
 {
   controlPlayer(view.player);
   controlEnemy(view.enemy);
+  controlBallBucket(view.ballBucket);
 }
 
 const nextFrameService = inject(NextFrameService);
@@ -73,7 +76,10 @@ nextFrameService.checkFramePass().subscribe({
 function constructViewTree(context: GraphicalContext, relativeTo?: View) {
   Object.values(context).forEach((viewComponent: View) => {
     setAbosolutePositon(viewComponent, relativeTo?.position.absolute);
-    viewComponent.stateMachine?.executeRoutine(viewComponent);
+
+    if (viewComponent.actionEmitter instanceof FiniteStateMachine) {
+      viewComponent.actionEmitter?.executeRoutine(viewComponent);
+    }
 
     if (viewComponent.components) {
       constructViewTree(viewComponent.components, viewComponent);

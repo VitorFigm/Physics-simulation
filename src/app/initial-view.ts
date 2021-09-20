@@ -20,7 +20,7 @@ export const createInitialView = () => {
     },
     components: {
       hand: {
-        sprite: api.imageLoader.get("red-box").image,
+        sprite: api.imageLoader.get("blue-box").image,
         box: {
           height: 25,
           width: 25,
@@ -69,7 +69,7 @@ export const createInitialView = () => {
     },
 
     position: {
-      x: 100,
+      x: 300,
       y: 10,
       angle: 0,
     },
@@ -92,21 +92,21 @@ export const createInitialView = () => {
   };
 
   const ballBucket: View = {
-    sprite: api.imageLoader.get("box").image,
+    sprite: api.imageLoader.get("red-box").image,
     box: {
       height: 50,
       width: 200,
     },
     position: {
-      x: 0,
+      x: 100,
       y: 0,
-      angle: 0,
+      angle: -0.5,
     },
   };
 
   return {
+    ballBucket,
     player,
     enemy,
-    ballBucket,
   };
 };
