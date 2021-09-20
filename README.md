@@ -1,6 +1,6 @@
 # WIP
 
-# [- Click here to see a demo](https://vitorfigm.github.io/Physics-simulation/
+# [- Click here to see a demo](https://vitorfigm.github.io/Physics-simulation/)
 
 ### Todo
 - [ ] Implement projectile thrown system.
