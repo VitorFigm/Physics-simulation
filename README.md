@@ -1,6 +1,7 @@
 # WIP
 
 # [- Click here to see a demo](https://vitorfigm.github.io/Physics-simulation/)
+Use **W, A, S, D** to move and **hold mouse click to control the arm**. 
 
 ### Todo
 - [ ] Implement projectile thrown system.
