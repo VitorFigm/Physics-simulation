@@ -1,5 +1,5 @@
 import { Point } from "@app/models";
-import { Polygon } from "./general-polygon";
+import { Polygon } from "./polygon";
 
 describe("Polygon", () => {
   it("should detect intersection correctly between two rectangle", () => {
