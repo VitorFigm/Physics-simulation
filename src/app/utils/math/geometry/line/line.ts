@@ -55,6 +55,10 @@ export class LineSegment {
     return possibleResult;
   }
 
+  intersects(line: LineSegment) {
+    return Boolean(this.getIntersection(line));
+  }
+
   evaluateAt(pointX: number) {
     const y = this.slope * pointX + this.yIntersect;
 
@@ -104,7 +108,7 @@ class HorizontalLineSegment extends LineSegment {
     return line.evaluateAt(this.xCoordinate);
   }
 
-  evaluateAt(pointX: number) {
+  evaluateAt(_: number) {
     return undefined;
   }
 

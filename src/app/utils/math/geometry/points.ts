@@ -22,6 +22,20 @@ export const calculateDistance = (point1: Point, point2: Point) => {
 };
 
 /**
+ * given an array of points, returns a array all distance formed
+ * by two consecutive points in an array and the distance between the last point
+ * to the first one
+ */
+export const getSequencialDistance = (points: Point[]) => {
+  return points.map((currentPoint, index) => {
+    const isLastIndex = index >= points.length - 1;
+    const nextPoint = isLastIndex ? points[0] : points[index + 1];
+
+    return calculateDistance(currentPoint, nextPoint);
+  });
+};
+
+/**
  * Makes `relativeTo` the origin of a coordinate system and returns the coordinates of `point1` in this sistem
  */
 export const calculateRelativeCoordinate = (

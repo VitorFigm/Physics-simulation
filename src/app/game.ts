@@ -24,7 +24,7 @@ import { MouseService } from "./services/mouse/mouse.service";
 import { setAbosolutePositon } from "./utils/position";
 import { controlEnemy } from "./controllers/enemy/enemy.controller";
 import { ParticleService } from "./services/particles/particles.service";
-import { Polygon } from "./utils/math/geometry/general-polygon/general-polygon";
+import { Polygon } from "./utils/math/geometry/polygon/polygon";
 import { graphics } from "dom-canvas";
 import { controlBallBucket } from "./controllers/ball-bucket/ball-bucket.controller";
 import { FiniteStateMachine } from "./controllers/states/state-machine";

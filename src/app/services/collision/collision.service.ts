@@ -2,7 +2,7 @@ import { View } from "@app/models";
 import { of } from "@app/utils";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
 
-import { Polygon } from "app/utils/math/geometry/general-polygon/general-polygon";
+import { Polygon } from "app/utils/math/geometry/polygon/polygon";
 import { NextFrameService } from "../next-frame/next-frame.service";
 
 export class CollisionService {

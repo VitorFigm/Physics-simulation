@@ -7,7 +7,7 @@ describe("Triangle", () => {
 
     const triangle = RightTriangle(triangleBase, triangleHeight);
 
-    expect(triangle.getArea()).toBeCloseTo((triangleBase * triangleHeight) / 2);
+    expect(triangle.area).toBeCloseTo((triangleBase * triangleHeight) / 2);
   });
 
   it("should correctly check if a point is inside the triangle", () => {
