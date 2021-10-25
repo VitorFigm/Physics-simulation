@@ -1,4 +1,4 @@
-import { Provider } from "@app/models";
+import { Provider } from "app/types";
 import { inject, provide } from "./inversion-of-control.engine";
 
 describe("Inversion of control", () => {

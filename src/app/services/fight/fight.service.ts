@@ -1,4 +1,4 @@
-import { View } from "@app/models";
+import { View } from "app/types";
 import { BehaviorSubject, Subject } from "@app/utils";
 
 type FighterStatus = BehaviorSubject<{

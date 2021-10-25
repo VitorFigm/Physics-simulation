@@ -1,7 +1,8 @@
-import { GraphicalAPI, GraphicalContext } from "@app/models";
+import { GraphicalContext } from "app/types";
 import { provide } from "app/core/inversion-of-control/inversion-of-control.engine";
 import { cropImage } from "app/utils/image-cropper/image-cropper";
 import { Graphics } from "./graphics.engine";
+import { GraphicalAPI } from "app/core/providers";
 
 describe("Graphics", () => {
   let square: HTMLImageElement;

@@ -1,4 +1,4 @@
-import { Point } from "@app/models";
+import { Point } from "app/types";
 import { calculateDistance, getSequencialDistance } from "../points";
 
 type TrianglePoints = [Point, Point, Point];

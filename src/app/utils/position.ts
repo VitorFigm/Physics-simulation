@@ -1,4 +1,4 @@
-import { Point, Position, View } from "@app/models";
+import { Point, Position, View } from "app/types";
 import { rotateAround, rotatePoint } from "./math/geometry/points";
 
 export const setAbosolutePositon = (

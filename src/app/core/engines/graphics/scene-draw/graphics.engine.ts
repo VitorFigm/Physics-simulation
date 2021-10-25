@@ -1,6 +1,7 @@
-import { View, GraphicalContext, GraphicalAPI } from "@app/models";
+import { View, GraphicalContext } from "app/types";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
 import { toBrowserCoordinates } from "app/utils/position";
+import { GraphicalAPI } from "app/core/providers";
 
 export class Graphics {
   private _api = inject(GraphicalAPI);

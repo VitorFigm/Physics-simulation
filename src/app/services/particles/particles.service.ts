@@ -1,12 +1,7 @@
-import {
-  GraphicalContext,
-  GraphicalContextToken,
-  Point,
-  Position,
-  View,
-} from "@app/models";
+import { GraphicalContext, Point, Position, View } from "app/types";
 import { RenderizationAPI } from "app/core/engines/graphics/graphical-api";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
+import { GraphicalContextToken } from "app/core/providers";
 
 type ParticleController = {
   removeParticle: () => void;

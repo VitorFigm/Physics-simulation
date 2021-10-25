@@ -1,4 +1,4 @@
-import { Point, View } from "@app/models";
+import { Point, View } from "app/types";
 import { getViewBoxCoordinates } from "app/utils/position";
 import { getMeanOf } from "../../simple-calculations";
 import { LineSegment } from "../line/line";

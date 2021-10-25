@@ -1,4 +1,4 @@
-import { Point, Position, View } from "@app/models";
+import { Point, Position, View } from "app/types";
 
 /**
  * rotate a point arroud the origin

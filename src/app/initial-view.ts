@@ -1,8 +1,8 @@
-import { ForeArm, FullArm } from "./controllers/arm/arm.controller";
-import { Player } from "./controllers/player/player.controller";
+import { ForeArm, FullArm } from "./modules/arm/arm.controller";
+import { Player } from "./modules/player/player.controller";
 import { RenderizationAPI } from "./core/engines/graphics/graphical-api";
 import { inject } from "./core/inversion-of-control/inversion-of-control.engine";
-import { GraphicalContext, View } from "./models";
+import { View } from "./types";
 
 export const createInitialView = () => {
   const api = inject(RenderizationAPI);

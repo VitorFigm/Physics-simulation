@@ -1,4 +1,4 @@
-import { View } from "@app/models";
+import { View } from "app/types";
 import { of } from "@app/utils";
 import { inject } from "app/core/inversion-of-control/inversion-of-control.engine";
 

@@ -1,4 +1,4 @@
-import { InjectableConstructor, Provider } from "@app/models";
+import { InjectableConstructor, Provider } from "app/types";
 
 type Container = Map<InjectableConstructor, Injection>;
 

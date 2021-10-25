@@ -1,4 +1,4 @@
-import { Sprite } from "@app/models";
+import { Sprite } from "app/types";
 import { assets, ValidImageName } from "assets";
 import { graphics } from "dom-canvas";
 

@@ -1,4 +1,4 @@
-import { Point } from "@app/models";
+import { Point } from "app/types";
 type RealSubset = {
   min: number;
   max: number;

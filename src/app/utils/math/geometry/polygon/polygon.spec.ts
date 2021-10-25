@@ -1,4 +1,4 @@
-import { Point } from "@app/models";
+import { Point } from "app/types";
 import { Polygon } from "./polygon";
 
 describe("Polygon", () => {

@@ -1,12 +1,6 @@
-import { View } from "./models/types/index";
-import {
-  GraphicalAPI,
-  GraphicalContext,
-  GraphicalContextToken,
-  Position,
-  Provider,
-} from "@app/models";
-import { controlPlayer } from "./controllers/player/player.controller";
+import { View } from "./types/index";
+import { GraphicalContext, Position, Provider } from "app/types";
+import { controlPlayer } from "./modules/player/player.controller";
 import { RenderizationAPI } from "./core/engines/graphics/graphical-api";
 import { Graphics } from "./core/engines/graphics/scene-draw/graphics.engine";
 import {
@@ -16,18 +10,17 @@ import {
 import { createInitialView } from "./initial-view";
 import { KeyboardService } from "./services/keyboard/keyboard.service";
 
-import { stateProviders } from "./controllers/states/state-providers";
+import { stateProviders } from "./modules/global/states/state-providers";
 import { NextFrameService } from "./services/next-frame/next-frame.service";
 import { CollisionService } from "./services/collision/collision.service";
 import { FightService } from "./services/fight/fight.service";
 import { MouseService } from "./services/mouse/mouse.service";
 import { setAbosolutePositon } from "./utils/position";
-import { controlEnemy } from "./controllers/enemy/enemy.controller";
+import { controlEnemy } from "./modules/enemy/enemy.controller";
 import { ParticleService } from "./services/particles/particles.service";
-import { Polygon } from "./utils/math/geometry/polygon/polygon";
-import { graphics } from "dom-canvas";
-import { controlBallBucket } from "./controllers/ball-bucket/ball-bucket.controller";
-import { FiniteStateMachine } from "./controllers/states/state-machine";
+import { controlBallBucket } from "./modules/ball-bucket/ball-bucket.controller";
+import { FiniteStateMachine } from "./modules/global/states/state-machine";
+import { GraphicalAPI, GraphicalContextToken } from "./core/providers";
 
 /// providers
 {

@@ -1,4 +1,4 @@
-import { Subscriber, Subscription } from "@app/models";
+import { Subscriber, Subscription } from "app/types";
 
 type Mapper<T, R> = (value: T) => R;
 
