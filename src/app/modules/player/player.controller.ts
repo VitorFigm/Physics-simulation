@@ -24,19 +24,26 @@ export const controlPlayer = (player: Player) => {
   let mousePosition: Point = { x: 0, y: 0 };
 
   onInit();
+  declareStates();
   defineKeyActions();
   defineArmControl();
   observeMouseMove();
-  handlecollision();
+  handleCollision();
 
   function onInit() {
     stateMachine = inject(FiniteStateMachine);
     collision$ = inject(CollisionService).observeCollision(player);
 
+    keyboardService = inject(KeyboardService);
+    mouseService = inject(MouseService);
+  }
+
+  function declareStates() {
     player.actionEmitter = stateMachine;
     const initialState = inject(Standing, { stateMachine });
     initialState.listenActions();
     stateMachine.setState(initialState);
+
     inject(Moving, {
       stateMachine,
       initialAcceleration: 1,
@@ -44,9 +51,6 @@ export const controlPlayer = (player: Player) => {
     }).listenActions();
 
     inject(Jumping, { stateMachine }).listenActions();
-
-    keyboardService = inject(KeyboardService);
-    mouseService = inject(MouseService);
   }
 
   function defineKeyActions() {
@@ -89,7 +93,7 @@ export const controlPlayer = (player: Player) => {
     controlArm(player.components.fullArm, controls);
   }
 
-  function handlecollision() {
+  function handleCollision() {
     collision$.subscribe({
       next: (view) => {},
     });

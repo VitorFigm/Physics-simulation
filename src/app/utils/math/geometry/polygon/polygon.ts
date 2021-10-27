@@ -125,7 +125,7 @@ export class Polygon {
    * case 3: at least one line from a polygon intersects
    * with a line from the other
    *
-   * case 2 and case 3 are O(n*m) or O(n²)
+   * case 2 and case 3 are O(n*m) or O(n²) for polygons with same length.
    */
   intersects(polygonToTest: Polygon) {
     if (this.isDistantFrom(polygonToTest)) {
