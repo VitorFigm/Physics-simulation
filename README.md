@@ -14,6 +14,3 @@ Use **W, A, S, D** to move and **hold mouse click to control the arm**.
 - [X] Implement arm physics
 - [X] Implement arm control system on click
 - [X] Implement polygonal collision  system
-- [ ] Implement projectile is thrown system.
-- [ ] Implement Bot IA.
-- [ ] Implement Ground System (make fighters be able to jump and stay into the high ground)
